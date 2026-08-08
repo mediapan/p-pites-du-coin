@@ -119,6 +119,13 @@
   .flyer:nth-child(3n+2){transform:rotate(-1deg);}
   .flyer:hover{transform:rotate(0deg) translateY(-3px) scale(1.015); box-shadow:0 16px 26px -8px #00000045;}
 
+  .flyer-img{
+    width:calc(100% + 32px);
+    margin:-16px -16px 12px;
+    height:140px;
+    object-fit:cover;
+    display:block;
+  }
   .flyer-cat{
     display:inline-block; font-family:'Space Mono',monospace; font-size:10px; letter-spacing:1px;
     text-transform:uppercase; color:#fff; padding:3px 8px; margin-bottom:10px; margin-right:4px;
@@ -131,6 +138,7 @@
   .cat-Enfants{background:var(--ochre);}
   .cat-Patrimoine{background:#8a6b3f;}
   .cat-Sport{background:var(--teal);}
+  .cat-Plages{background:#1f7a9c;}
 
   .flyer h3{
     font-family:'Big Shoulders Display', sans-serif;
@@ -233,6 +241,13 @@
   .secz-proche{background:radial-gradient(circle at 30% 20%, #5c8a63, var(--cyprus) 70%);}
   .secz-moyen{background:radial-gradient(circle at 30% 20%, #4b93b3, var(--azure) 70%);}
   .secz-pepite{background:radial-gradient(circle at 30% 20%, #8f7cb8, var(--lavender) 70%);}
+  .scroll-card.has-photo{background-size:cover; background-position:center;}
+  .scroll-card.has-photo::after{
+    content:""; position:absolute; inset:0; z-index:1;
+    background:linear-gradient(180deg, #00000010 0%, #00000030 40%, #000000b0 100%);
+  }
+  .scroll-card.has-photo::before{opacity:0;}
+  .detail-img{width:calc(100% + 52px); margin:-26px -26px 14px; height:220px; object-fit:cover; display:block;}
 
   .scroll-card h2, .scroll-card .scroll-meta, .scroll-card .scroll-desc, .scroll-card .desc-toggle, .scroll-card .scroll-hint{position:relative; z-index:3;}
 
@@ -359,9 +374,9 @@ const CONFIG_READY = firebaseConfig.apiKey !== "YOUR_API_KEY";
 // Firebase Console > Authentication > Users > copie ton UID ici.
 const ADMIN_UID = "5FMDbRE7PwgJukowGITjx3doV022";
 
-const CATS = ["Nature","Enfants","Patrimoine","Sport"];
-const CAT_LABEL = {Nature:"Nature & Randos", Enfants:"Enfants & Familles", Patrimoine:"Patrimoine & Visites", Sport:"Loisirs & Sport"};
-const CAT_EMOJI = {Nature:"🥾", Enfants:"🎠", Patrimoine:"🏰", Sport:"🧗"};
+const CATS = ["Nature","Enfants","Patrimoine","Sport","Plages"];
+const CAT_LABEL = {Nature:"Nature & Randos", Enfants:"Enfants & Familles", Patrimoine:"Patrimoine & Visites", Sport:"Loisirs & Sport", Plages:"Plages & Baignade"};
+const CAT_EMOJI = {Nature:"🥾", Enfants:"🎠", Patrimoine:"🏰", Sport:"🧗", Plages:"🏖️"};
 
 const ZONES = ["proche","moyen","pepite"];
 const ZONE_LABEL = {proche:"À côté (0–20 km)", moyen:"Dans le coin (20–35 km)", pepite:"Pépite (35 km+)"};
@@ -375,6 +390,50 @@ function demoImg(bg, label){
 // Jeu de données de démarrage : spots réels autour de Velaux, à importer une fois
 // (bouton "＋ Importer les spots de départ" visible en mode admin si la base est vide).
 const DEMO_SPOTS = [
+  // --- PLAGES & BAIGNADE ---
+  {titre:"Plage de la Corniche", cats:["Plages"], commune:"Sausset-les-Pins", zone:"moyen", distanceKm:22,
+   image:null,
+   adresse:"Promenade de la Corniche, 13960 Sausset-les-Pins",
+   desc:"Plage principale de Sausset-les-Pins, en plein centre, mélange de sable et de galets.",
+   tip:"Accessible à pied depuis le village. Très fréquentée en été, prévoir d'arriver tôt pour se garer.",
+   prix:"Gratuit", niveau:"Familial, baignade non surveillée hors saison", lien:null},
+  {titre:"Plage des Baumettes", cats:["Plages"], commune:"Sausset-les-Pins", zone:"moyen", distanceKm:23,
+   image:null,
+   adresse:null,
+   desc:"Grande plage de sable et petits galets à la limite de Carry-le-Rouet, appréciée des familles.",
+   tip:"Parking gratuit mais rare en été. Accès adapté aux personnes à mobilité réduite.",
+   prix:"Gratuit", niveau:"Familial", lien:null},
+  {titre:"Plage du Rouet", cats:["Plages"], commune:"Carry-le-Rouet", zone:"moyen", distanceKm:24,
+   adresse:null,
+   desc:"L'une des plus grandes plages de la Côte Bleue, alternance de galets et de sable, eau turquoise.",
+   tip:"De nombreuses activités nautiques sur place : paddle, kayak, voile légère.",
+   prix:"Gratuit", niveau:"Familial", lien:null},
+  {titre:"Anse du Petit Nid", cats:["Plages"], commune:"Sausset-les-Pins", zone:"moyen", distanceKm:23,
+   adresse:null,
+   desc:"Petite crique de galets abritée du vent, prisée pour l'observation des oursins.",
+   tip:"Idéale par mistral car bien protégée. Douches publiques et parking gratuit à proximité.",
+   prix:"Gratuit", niveau:"Facile", lien:null},
+  {titre:"Plage de Couronne-Vieille", cats:["Plages"], commune:"Martigues", zone:"moyen", distanceKm:27,
+   adresse:"Quartier de La Couronne, 13500 Martigues",
+   desc:"Plage pittoresque dominée par une chapelle, bordée de pins offrant de l'ombre, eaux limpides.",
+   tip:"Surveillée en saison. Traversée par le sentier du littoral, jolie balade possible avant ou après la baignade.",
+   prix:"Gratuit", niveau:"Familial", lien:null},
+  {titre:"Plage du centre-ville — bord de l'étang de Berre", cats:["Plages"], commune:"Martigues", zone:"moyen", distanceKm:25,
+   adresse:null,
+   desc:"Plage de sable en plein centre de Martigues, certifiée eaux de baignade, sans vagues ni courant.",
+   tip:"Pratique pour combiner baignade et balade dans le quartier de l'Île le même après-midi.",
+   prix:"Gratuit", niveau:"Familial, eau calme", lien:null},
+  {titre:"Plage municipale d'Istres", cats:["Plages"], commune:"Istres", zone:"moyen", distanceKm:24,
+   adresse:null,
+   desc:"Plage aménagée au bord de l'étang de l'Olivier, eau calme sans marée ni vagues, idéale petits enfants.",
+   tip:"Base nautique attenante pour louer paddle et canoë. Aire de jeux et snacks à proximité.",
+   prix:"Gratuit", niveau:"Familial, dès le plus jeune âge", lien:null},
+  {titre:"Plages des Saintes-Maries-de-la-Mer", cats:["Plages","Nature"], commune:"Saintes-Maries-de-la-Mer", zone:"pepite", distanceKm:70,
+   adresse:null,
+   desc:"Immenses plages de sable sauvage à perte de vue, entre mer et marais, au cœur de la Camargue.",
+   tip:"Peu ou pas d'ombre, prévoir crème solaire et parasol. Certaines portions sont naturistes, se renseigner sur place.",
+   prix:"Gratuit (parking payant en saison)", niveau:"Familial", lien:null},
+
   // --- NATURE & RANDOS ---
   {titre:"Bord de l'étang de Berre — Parc de la Garenne", cats:["Nature"], commune:"Velaux", zone:"proche", distanceKm:0,
    adresse:"Parc de la Garenne, 13880 Velaux",
@@ -397,11 +456,12 @@ const DEMO_SPOTS = [
    tip:"Réseau de sentiers balisés. Accès parfois restreint l'été en cas de risque incendie élevé — vérifier avant de partir.",
    prix:"Gratuit", niveau:"Facile à moyen", lien:null},
   {titre:"Aqueduc de Roquefavour & bord de l'Arc", cats:["Nature","Patrimoine"], commune:"Ventabren", zone:"proche", distanceKm:12,
+   image:"https://commons.wikimedia.org/wiki/Special:FilePath/Aqueduc%20de%20Roquefavour%202.jpg?width=800",
    adresse:"Le Moulin du Pont, 13122 Ventabren",
    desc:"Le plus grand aqueduc en pierre de maçonnerie d'Europe, avec possibilité de baignade dans l'Arc en contrebas.",
    tip:"Parking gratuit au rond-point du Moulin du Pont. Baignade sauvage à ses risques, site très fréquenté l'été.",
    prix:"Gratuit", niveau:"Familial", lien:null},
-  {titre:"Calanque de Niolon", cats:["Nature"], commune:"Le Rove", zone:"proche", distanceKm:20,
+  {titre:"Calanque de Niolon", cats:["Nature","Plages"], commune:"Le Rove", zone:"proche", distanceKm:20,
    adresse:null,
    desc:"Petite crique à l'eau turquoise nichée près d'un port de pêche, moins connue que les grandes calanques.",
    tip:"Accès à pied depuis le petit port. Arriver tôt en été pour trouver une place à l'ombre.",
@@ -417,16 +477,19 @@ const DEMO_SPOTS = [
    tip:"Tronçon Carry → Sausset-les-Pins : environ 1h30 à pied. Prévoir des chaussures de marche, ombre rare.",
    prix:"Gratuit", niveau:"Moyen", lien:null},
   {titre:"Montagne Sainte-Victoire", cats:["Nature","Sport"], commune:"Vauvenargues", zone:"pepite", distanceKm:45,
+   image:"https://commons.wikimedia.org/wiki/Special:FilePath/Montagne%20Sainte-Victoire%20depuis%20Saint-Antonin-sur-Bayon.jpg?width=800",
    adresse:"Barrage de Bimont, 13100 Aix-en-Provence",
    desc:"La montagne de Cézanne : randos vers le prieuré et la Croix de Provence, vues à 360°.",
    tip:"Départ conseillé au barrage de Bimont. Prévoir beaucoup d'eau, l'accès peut être fermé les jours de fort mistral.",
    prix:"Gratuit", niveau:"Soutenu", lien:null},
   {titre:"Calanques — Port-Miou à En-Vau", cats:["Nature","Sport"], commune:"Cassis", zone:"pepite", distanceKm:50,
+   image:"https://commons.wikimedia.org/wiki/Special:FilePath/Calanque%20d%27En%20Vau-Cassis.jpg?width=800",
    adresse:null,
    desc:"Le grand classique : criques d'eau turquoise encaissées entre falaises blanches.",
    tip:"Partir tôt le matin. Accès à certaines calanques soumis à réservation en ligne l'été (fort risque incendie).",
    prix:"Gratuit (réservation obligatoire en été)", niveau:"Moyen, 3h AR", lien:"https://www.calanques-parcnational.fr"},
   {titre:"Camargue — Étang du Vaccarès & Saintes-Maries", cats:["Nature"], commune:"Saintes-Maries-de-la-Mer", zone:"pepite", distanceKm:70,
+   image:"https://commons.wikimedia.org/wiki/Special:FilePath/Flamants%20roses%20en%20Camargue.jpg?width=800",
    adresse:null,
    desc:"Flamants roses, chevaux et taureaux en liberté, plages sauvages à perte de vue.",
    tip:"Prévoir la journée. Location de vélo agréable le long des digues. Moustiques redoutables au printemps — anti-moustique indispensable.",
@@ -469,6 +532,7 @@ const DEMO_SPOTS = [
    tip:"Chaussons et matériel en location sur place. Formule anniversaire possible.",
    prix:"Payant", niveau:"Dès 5 ans", lien:null},
   {titre:"Miroir aux Oiseaux & balade des canaux", cats:["Enfants","Patrimoine"], commune:"Martigues", zone:"moyen", distanceKm:25,
+   image:"https://commons.wikimedia.org/wiki/Special:FilePath/Martigues%20-%20Miroir%20aux%20Oiseaux.jpg?width=800",
    adresse:"Quartier de l'Île, 13500 Martigues",
    desc:"Façades colorées reflétées dans l'eau du canal Saint-Sébastien, glaces et jeux sur les quais.",
    tip:"Parking de l'Île payant. Jolie balade en fin d'après-midi, lumière dorée sur les façades.",
@@ -486,6 +550,7 @@ const DEMO_SPOTS = [
    tip:"Parcours balisé de 9,7 km « entre village et colline » au départ du cimetière Saint-Martin (flyer dispo en mairie).",
    prix:"Gratuit", niveau:"Facile", lien:null},
   {titre:"Village perché de Ventabren", cats:["Patrimoine"], commune:"Ventabren", zone:"proche", distanceKm:12,
+   image:"https://commons.wikimedia.org/wiki/Special:FilePath/Ventabren%20village.jpg?width=800",
    adresse:null,
    desc:"Vestiges du château de la Reine Jeanne, ruelles perchées, vue sur toute la plaine aixoise.",
    tip:"Se garer en bas du village et monter à pied. Très photogénique au coucher de soleil.",
@@ -496,11 +561,13 @@ const DEMO_SPOTS = [
    tip:"Marché le mercredi matin. Belle vue sur la plaine aixoise depuis l'esplanade du village.",
    prix:"Gratuit", niveau:"Facile", lien:null},
   {titre:"Aix-en-Provence — cours Mirabeau", cats:["Patrimoine"], commune:"Aix-en-Provence", zone:"moyen", distanceKm:25,
+   image:"https://commons.wikimedia.org/wiki/Special:FilePath/2016%20Aix-en-Provence%20-%20Le%20cours%20Mirabeau.jpg?width=800",
    adresse:null,
    desc:"Fontaines, hôtels particuliers, ateliers de Cézanne : la grande ville d'art la plus proche de Velaux.",
    tip:"Se garer en parking-relais. Marché provençal les mardi, jeudi et samedi matin dans le centre.",
    prix:"Gratuit (musées payants)", niveau:"Familial", lien:null},
   {titre:"Salon-de-Provence — château de l'Empéri", cats:["Patrimoine"], commune:"Salon-de-Provence", zone:"moyen", distanceKm:20,
+   image:"https://commons.wikimedia.org/wiki/Special:FilePath/Emperi.jpg?width=800",
    adresse:null,
    desc:"Cité de Nostradamus et de la cavalerie, château médiéval dominant la ville.",
    tip:"Le château offre une vue superbe sur la ville. Combiner avec une balade dans le centre piéton.",
@@ -511,6 +578,7 @@ const DEMO_SPOTS = [
    tip:"Combinable avec la visite du zoo attenant pour une journée complète.",
    prix:"Payant", niveau:"Familial", lien:null},
   {titre:"Les Baux-de-Provence", cats:["Patrimoine"], commune:"Les Baux-de-Provence", zone:"pepite", distanceKm:45,
+   image:"https://commons.wikimedia.org/wiki/Special:FilePath/13520%20Les%20Baux-de-Provence%2C%20France%20-%20panoramio%20%282%29.jpg?width=800",
    adresse:null,
    desc:"Village perché classé parmi les plus beaux de France, accroché à un éperon rocheux des Alpilles.",
    tip:"Arriver tôt pour éviter l'affluence. Les Carrières de Lumières juste en contrebas valent le détour.",
@@ -830,6 +898,7 @@ function openDeleteAllConfirm(){
 function toExportFormat(){
   return spots.map(s=>({
     titre: s.titre,
+    image: s.image || null,
     cats: s.cats || [],
     commune: s.commune,
     zone: s.zone,
@@ -921,6 +990,9 @@ function openPublishForm(editing){
       <button class="close" id="closeModal">✕ fermer</button>
       <h2>${isEdit ? 'Modifier le spot' : 'Ajouter un spot'}</h2>
       <label>Titre</label><input type="text" id="f-titre" placeholder="Ex : Calanque de Niolon" value="${isEdit ? (editing.titre||'').replace(/"/g,'&quot;') : ''}">
+      <label>Photo (URL, libre de droits idéalement)</label>
+      <input type="url" id="f-image" placeholder="https://..." value="${isEdit && editing.image ? editing.image : ''}">
+      <div style="font-family:'Space Mono',monospace; font-size:10.5px; color:var(--ink-soft); margin-top:2px;">Astuce : cherche le lieu sur commons.wikimedia.org, ouvre l'image, clic droit → copier l'adresse de l'image.</div>
       <label>Catégories (plusieurs possibles)</label>
       <div id="f-cats-list" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:4px;">
         ${CATS.map(c=>`
@@ -967,6 +1039,7 @@ function openPublishForm(editing){
     const distanceVal = document.getElementById('f-distance').value;
     const payload = {
       titre,
+      image: document.getElementById('f-image').value.trim() || null,
       cats,
       commune,
       zone: document.getElementById('f-zone').value,
@@ -1002,6 +1075,7 @@ function openDetail(s){
   <div class="overlay" id="overlay">
     <div class="modal">
       <button class="close" id="closeModal">✕ fermer</button>
+      ${s.image ? `<img class="detail-img" src="${s.image}" alt="${s.titre}" onerror="this.remove()">` : ''}
       <div>
         ${(s.cats||[]).map(c=>`<span class="flyer-cat ${catClass(c)}">${CAT_EMOJI[c]} ${CAT_LABEL[c]}</span>`).join('')}
       </div>
@@ -1047,6 +1121,7 @@ function renderBoard(){
   }
   board.innerHTML = list.map(s=>`
     <div class="flyer" data-id="${s.id}">
+      ${s.image ? `<img class="flyer-img" src="${s.image}" alt="${s.titre}" loading="lazy" onerror="this.remove()">` : ''}
       ${(s.cats||[]).map(c=>`<span class="flyer-cat ${catClass(c)}">${CAT_EMOJI[c]} ${CAT_LABEL[c]}</span>`).join('')}
       <h3>${s.titre}</h3>
       <div class="meta"><span class="flyer-commune-tag">📍 ${s.commune}</span>${s.distanceKm!=null ? ` · ${s.distanceKm} km` : ''}</div>
@@ -1075,7 +1150,7 @@ function renderScrollFeed(){
     return;
   }
   feed.innerHTML = list.map((s,i)=>`
-    <div class="scroll-card secz-${s.zone}" data-emoji="${CAT_EMOJI[(s.cats||[])[0]]||'📍'}" data-id="${s.id}">
+    <div class="scroll-card secz-${s.zone}${s.image ? ' has-photo' : ''}" data-emoji="${CAT_EMOJI[(s.cats||[])[0]]||'📍'}" data-id="${s.id}" ${s.image ? `style="background-image:url('${s.image}');"` : ''}>
       <div class="scroll-top">
         <div class="scroll-top-left">
           <span class="scroll-counter">${i+1}/${list.length}</span>
