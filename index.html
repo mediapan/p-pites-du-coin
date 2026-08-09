@@ -1076,9 +1076,6 @@ function openPublishForm(editing){
       <button class="close" id="closeModal">✕ fermer</button>
       <h2>${isEdit ? 'Modifier le spot' : 'Ajouter un spot'}</h2>
       <label>Titre</label><input type="text" id="f-titre" placeholder="Ex : Calanque de Niolon" value="${isEdit ? (editing.titre||'').replace(/"/g,'&quot;') : ''}">
-      <label>Photo (URL, libre de droits idéalement)</label>
-      <input type="url" id="f-image" placeholder="https://..." value="${isEdit && editing.image ? editing.image : ''}">
-      <div style="font-family:'Space Mono',monospace; font-size:10.5px; color:var(--ink-soft); margin-top:2px;">Astuce : cherche le lieu sur commons.wikimedia.org, ouvre l'image, clic droit → copier l'adresse de l'image.</div>
       <label>Catégories (plusieurs possibles)</label>
       <div id="f-cats-list" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:4px;">
         ${CATS.map(c=>`
@@ -1087,6 +1084,13 @@ function openPublishForm(editing){
           </label>
         `).join('')}
       </div>
+      <label>Photo</label>
+      <div id="f-image-preview-wrap" style="position:relative; cursor:pointer; border-radius:4px; overflow:hidden; border:1px solid #b6935c88;">
+        <img id="f-image-preview" src="${isEdit && editing.image ? editing.image : (CAT_FALLBACK_IMAGE[(isEdit && (editing.cats||[])[0]) || CATS[0]] || '')}" style="width:100%; height:140px; object-fit:cover; display:block;">
+        <div id="f-image-preview-label" style="position:absolute; bottom:0; left:0; right:0; background:#00000090; color:#fff8ec; font-family:'Space Mono',monospace; font-size:11px; padding:6px 10px; text-align:center;">${isEdit && editing.image ? '📷 Ta photo — clique pour changer' : '🖼️ Photo générique — clique pour mettre la tienne'}</div>
+      </div>
+      <input type="url" id="f-image" placeholder="Colle une URL d'image (https://...)" value="${isEdit && editing.image ? editing.image : ''}" style="margin-top:8px;">
+      <div style="font-family:'Space Mono',monospace; font-size:10.5px; color:var(--ink-soft); margin-top:2px;">Astuce : cherche le lieu sur commons.wikimedia.org, ouvre l'image, clic droit → copier l'adresse de l'image. Laisse vide pour garder la photo générique de la catégorie.</div>
       <label>Commune</label>
       <input type="text" id="f-commune" placeholder="Ex : Ventabren" value="${isEdit ? (editing.commune||'').replace(/"/g,'&quot;') : ''}">
       <label>Zone</label>
@@ -1111,6 +1115,27 @@ function openPublishForm(editing){
   </div>`;
   document.getElementById('overlay').onclick = (e)=>{ if(e.target.id==='overlay') closeModal(); };
   document.getElementById('closeModal').onclick = closeModal;
+
+  const imgInput = document.getElementById('f-image');
+  const imgPreview = document.getElementById('f-image-preview');
+  const imgPreviewLabel = document.getElementById('f-image-preview-label');
+  function currentFirstCat(){
+    const checked = document.querySelector('.f-cat-checkbox:checked');
+    return checked ? checked.value : CATS[0];
+  }
+  function refreshPreview(){
+    const url = imgInput.value.trim();
+    if(url){
+      imgPreview.src = url;
+      imgPreviewLabel.textContent = '📷 Ta photo — clique pour changer';
+    } else {
+      imgPreview.src = CAT_FALLBACK_IMAGE[currentFirstCat()] || '';
+      imgPreviewLabel.textContent = '🖼️ Photo générique — clique pour mettre la tienne';
+    }
+  }
+  imgInput.oninput = refreshPreview;
+  document.querySelectorAll('.f-cat-checkbox').forEach(cb=>{ cb.onchange = refreshPreview; });
+  document.getElementById('f-image-preview-wrap').onclick = ()=>{ imgInput.focus(); imgInput.select(); };
 
   document.getElementById('f-submit').onclick = async ()=>{
     const titre = document.getElementById('f-titre').value.trim();
