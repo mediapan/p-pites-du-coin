@@ -96,9 +96,9 @@
   .pill.active{background:var(--ochre); color:#fff8ec; border-color:var(--ochre); transform:translateY(-1px);}
   .pill:hover{transform:translateY(-1px);}
   .sort-toggle{margin-left:auto; display:flex; gap:6px;}
- 
+
   .board{max-width:1100px; margin:34px auto; padding:0 24px 90px; display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:30px 26px;}
- 
+
   .flyer{
     position:relative;
     background:var(--paper);
@@ -118,7 +118,7 @@
   .flyer:nth-child(3n+1){transform:rotate(1.6deg);}
   .flyer:nth-child(3n+2){transform:rotate(-1deg);}
   .flyer:hover{transform:rotate(0deg) translateY(-3px) scale(1.015); box-shadow:0 16px 26px -8px #00000045;}
- 
+
   .flyer-img{
     width:calc(100% + 32px);
     margin:-16px -16px 12px;
@@ -135,11 +135,12 @@
     color:var(--ochre); white-space:nowrap;
   }
   .cat-Nature{background:var(--cyprus);}
-  .cat-Enfants{background:var(--ochre);}
+  .cat-Kids{background:var(--ochre);}
   .cat-Patrimoine{background:#8a6b3f;}
   .cat-Sport{background:var(--lavender);}
   .cat-Plages{background:var(--azure);}
- 
+  .cat-Amis{background:#a3345c;}
+
   .flyer h3{
     font-family:'Big Shoulders Display', sans-serif;
     font-weight:700; font-size:23px; line-height:1.05; margin:0 0 8px;
@@ -156,7 +157,7 @@
   .zone-moyen{background:var(--azure); color:#fff8ec;}
   .zone-pepite{background:var(--lavender); color:#fff8ec;}
   .prix-badge{font-family:'Space Mono',monospace; font-size:11.5px; color:var(--ink-soft);}
- 
+
   .empty{grid-column:1/-1; text-align:center; padding:60px 20px; font-family:'Space Mono',monospace; color:#5a4c3899;}
   .loading-pulse{animation:pulse 1.4s ease-in-out infinite;}
   @keyframes pulse{0%,100%{opacity:0.4;}50%{opacity:0.9;}}
@@ -164,7 +165,7 @@
     margin-top:14px; background:var(--cyprus); color:#fff8ec; border:none; padding:9px 16px; border-radius:20px;
     font-family:'Space Mono',monospace; font-size:12px; cursor:pointer;
   }
- 
+
   .fab{
     position:fixed; bottom:26px; right:26px; z-index:50;
     background:var(--ochre); color:#fff8ec; border:none; border-radius:50px;
@@ -174,7 +175,7 @@
     transition:transform .15s ease;
   }
   .fab:hover{transform:translateY(-2px) scale(1.03);}
- 
+
   .overlay{position:fixed; inset:0; background:#1a130bcc; z-index:60; display:flex; align-items:center; justify-content:center; padding:20px;}
   .modal{
     background:var(--paper); max-width:520px; width:100%; max-height:85vh; overflow-y:auto;
@@ -207,7 +208,7 @@
     padding:8px 16px; border-radius:20px; font-family:'Space Mono',monospace; font-size:12.5px;
   }
   .link-btn:hover{background:var(--cyprus);}
- 
+
   .scrollFeed{
     display:none;
     height:100%;
@@ -216,7 +217,7 @@
   }
   .content.mode-scroll .scrollFeed{display:block;}
   .content.mode-scroll .board{display:none;}
- 
+
   .scroll-card{
     position:relative;
     height:100%;
@@ -248,9 +249,9 @@
   }
   .scroll-card.has-photo::before{opacity:0;}
   .detail-img{width:calc(100% + 52px); margin:-26px -26px 14px; height:220px; object-fit:cover; display:block;}
- 
+
   .scroll-card h2, .scroll-card .scroll-meta, .scroll-card .scroll-desc, .scroll-card .desc-toggle, .scroll-card .scroll-hint{position:relative; z-index:3;}
- 
+
   .scroll-top{position:absolute; top:20px; left:26px; right:26px; z-index:3; display:flex; justify-content:space-between; align-items:flex-start; gap:8px;}
   .scroll-top-left{display:flex; gap:6px; flex-wrap:wrap;}
   .scroll-counter{font-family:'Space Mono',monospace; font-size:12px; background:#00000040; padding:5px 10px; border-radius:20px; flex:0 0 auto;}
@@ -260,7 +261,7 @@
     background:var(--ochre); color:#fff8ec; padding:4px 12px 3px; border-radius:20px;
     text-shadow:0 1px 2px #00000040; white-space:nowrap;
   }
- 
+
   .scroll-card h2{
     font-family:'Big Shoulders Display',sans-serif; font-weight:900; font-size:44px; line-height:1.02;
     text-transform:uppercase; margin:0 0 12px; text-shadow:0 3px 10px #00000055; max-width:80%;
@@ -273,14 +274,14 @@
     text-decoration:underline; padding:6px 0 0; cursor:pointer; opacity:0.9;
   }
   .desc-toggle:hover{opacity:1;}
- 
+
   .scroll-hint{
     position:absolute; bottom:16px; left:50%; transform:translateX(-50%);
     font-family:'Space Mono',monospace; font-size:11px; text-align:center; opacity:0.85;
     animation:bob 1.6s ease-in-out infinite;
   }
   @keyframes bob{0%,100%{transform:translate(-50%,0);}50%{transform:translate(-50%,-6px);}}
- 
+
   @media (max-width: 640px){
     .topbar{padding:14px 14px 12px;}
     .brand{font-size:24px;}
@@ -307,14 +308,14 @@
     .brand{font-size:20px;}
     .flyer h3{font-size:18px;}
   }
- 
+
   .config-warning{
     position:fixed; top:0; left:0; right:0; z-index:200;
     background:#8a2f22; color:#fff8ec; font-family:'Space Mono',monospace; font-size:12px;
     padding:10px 16px; text-align:center; line-height:1.5;
   }
   .config-warning code{background:#00000040; padding:1px 5px; border-radius:2px;}
- 
+
   #adminZone{display:flex; align-items:center; gap:6px; flex-wrap:wrap;}
   .login-form{display:flex; flex-direction:column; gap:8px;}
 </style>
@@ -339,11 +340,11 @@
     <div class="board" id="board"></div>
   </div>
 </div>
- 
+
 <button class="fab" id="openPublish" style="display:none;">✎ Ajouter un spot</button>
- 
+
 <div id="modalRoot"></div>
- 
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import {
@@ -353,7 +354,7 @@ import {
 import {
   getAuth, signInAnonymously, signInWithEmailAndPassword, signOut, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
- 
+
 // 🔧 À REMPLACER : colle ici la config d'un NOUVEAU projet Firebase dédié
 // (Console Firebase > Créer un projet "pepites-du-coin" > Paramètres > Tes applications > SDK config)
 const firebaseConfig = {
@@ -364,29 +365,56 @@ const firebaseConfig = {
   messagingSenderId: "796236008420",
   appId: "1:796236008420:web:d8f8fc76573f26cbec15f1"
 };
- 
+
 const CONFIG_READY = firebaseConfig.apiKey !== "YOUR_API_KEY";
- 
+
 // 🔧 À REMPLACER une fois ton compte admin créé :
 // Firebase Console > Authentication > Users > copie ton UID ici.
 const ADMIN_UID = "5FMDbRE7PwgJukowGITjx3doV022";
- 
-const CATS = ["Nature","Enfants","Patrimoine","Sport","Plages"];
-const CAT_LABEL = {Nature:"Nature & Randos", Enfants:"Enfants & Familles", Patrimoine:"Patrimoine & Visites", Sport:"Loisirs & Sport", Plages:"Plages & Baignade"};
-const CAT_EMOJI = {Nature:"🥾", Enfants:"🎠", Patrimoine:"🏰", Sport:"🧗", Plages:"🏖️"};
- 
+
+const CATS = ["Nature","Kids","Patrimoine","Sport","Plages","Amis"];
+const CAT_LABEL = {Nature:"Nature & Randos", Kids:"Kids", Patrimoine:"Patrimoine & Visites", Sport:"Loisirs & Sport", Plages:"Plages & Baignade", Amis:"Entre amis (adultes)"};
+const CAT_EMOJI = {Nature:"🥾", Kids:"🎠", Patrimoine:"🏰", Sport:"🧗", Plages:"🏖️", Amis:"🥂"};
+
 const ZONES = ["proche","moyen","pepite"];
-const ZONE_LABEL = {proche:"À côté (0–20 km)", moyen:"Dans le coin (20–35 km)", pepite:"Pépite (35 km+)"};
+const ZONE_LABEL = {proche:"À côté (0–20 km)", moyen:"Dans le coin (20–35 km)", pepite:"Vaut le détour (35 km+)"};
 const ZONE_EMOJI = {proche:"🏠", moyen:"🚗", pepite:"💎"};
- 
+
 function demoImg(bg, label){
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='400' height='700'><rect width='100%' height='100%' fill='${bg}'/><text x='50%' y='50%' font-family='sans-serif' font-size='30' fill='white' text-anchor='middle' dominant-baseline='middle'>${label}</text></svg>`;
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 }
- 
+
 // Jeu de données de démarrage : spots réels autour de Velaux, à importer une fois
 // (bouton "＋ Importer les spots de départ" visible en mode admin si la base est vide).
 const DEMO_SPOTS = [
+  // --- ENTRE AMIS (ADULTES) ---
+  {titre:"Kart'Up Vitrolles", cats:["Amis","Sport"], commune:"Vitrolles", zone:"proche", distanceKm:13,
+   adresse:null,
+   desc:"Complexe multi-loisirs : karting indoor, bowling, laser game, quiz et karaoké, le tout sous le même toit.",
+   tip:"Pratique par mauvais temps ou pour une soirée. Formules groupe et anniversaire disponibles, réservation conseillée le week-end.",
+   prix:"Payant — tarif par activité", niveau:"Adultes et ados", lien:"https://kartup-vitrolles.com"},
+  {titre:"Château Calissanne — dégustation", cats:["Amis"], commune:"Lançon-Provence", zone:"proche", distanceKm:9,
+   adresse:null,
+   desc:"Domaine viticole de 1200 hectares aux reliefs de falaises, dégustation de vins de Provence sur place.",
+   tip:"Le plus proche de Velaux. Certaines visites se font sur réservation, se renseigner avant de passer.",
+   prix:"Dégustation souvent gratuite, visites guidées payantes", niveau:"Adultes", lien:null},
+  {titre:"Escape game Mind and Run", cats:["Amis"], commune:"Aix-en-Provence", zone:"moyen", distanceKm:25,
+   adresse:null,
+   desc:"7 salles d'escape game sur 850m², idéal pour un anniversaire, un EVJF/EVG ou une soirée entre amis.",
+   tip:"Réserver en ligne à l'avance, surtout le week-end. Un espace bar est disponible sur place après la partie.",
+   prix:"Payant — env. 33€/pers", niveau:"Adultes, dès 4 joueurs conseillé", lien:null},
+  {titre:"Aquae Maltae — brasserie artisanale", cats:["Amis"], commune:"Aix-en-Provence", zone:"moyen", distanceKm:26,
+   adresse:null,
+   desc:"Visite-dégustation chez un brasseur artisanal provençal, une quinzaine de bières bio différentes selon la saison.",
+   tip:"Les visites se font généralement sur réservation, prévoir de repartir avec quelques bouteilles.",
+   prix:"Payant", niveau:"Adultes", lien:null},
+  {titre:"BowlingStar Martigues", cats:["Amis"], commune:"Martigues", zone:"moyen", distanceKm:25,
+   adresse:null,
+   desc:"16 pistes de bowling et 18 billards, ambiance conviviale pour une soirée entre amis.",
+   tip:"Pratique en cas de mauvais temps. Formules groupes pour les grandes tablées.",
+   prix:"Payant — tarif par partie", niveau:"Adultes et ados", lien:null},
+
   // --- PLAGES & BAIGNADE ---
   {titre:"Plage de la Corniche", cats:["Plages"], commune:"Sausset-les-Pins", zone:"moyen", distanceKm:22,
    image:null,
@@ -482,7 +510,7 @@ const DEMO_SPOTS = [
    desc:"Immenses plages de sable sauvage à perte de vue, entre mer et marais, au cœur de la Camargue.",
    tip:"Peu ou pas d'ombre, prévoir crème solaire et parasol. Certaines portions sont naturistes, se renseigner sur place.",
    prix:"Gratuit (parking payant en saison)", niveau:"Familial", lien:null},
- 
+
   // --- NATURE & RANDOS ---
   {titre:"Bord de l'étang de Berre — Parc de la Garenne", cats:["Nature"], commune:"Velaux", zone:"proche", distanceKm:0,
    adresse:"Parc de la Garenne, 13880 Velaux",
@@ -543,55 +571,55 @@ const DEMO_SPOTS = [
    desc:"Flamants roses, chevaux et taureaux en liberté, plages sauvages à perte de vue.",
    tip:"Prévoir la journée. Location de vélo agréable le long des digues. Moustiques redoutables au printemps — anti-moustique indispensable.",
    prix:"Gratuit (parking payant sur certains sites)", niveau:"Facile", lien:null},
- 
+
   // --- ENFANTS & FAMILLES ---
-  {titre:"Indian Forest — Decathlon Village", cats:["Enfants","Sport"], commune:"Bouc-Bel-Air", zone:"moyen", distanceKm:30,
+  {titre:"Indian Forest — Decathlon Village", cats:["Kids","Sport"], commune:"Bouc-Bel-Air", zone:"moyen", distanceKm:30,
    adresse:"Decathlon Village, 13320 Bouc-Bel-Air",
    desc:"Parc accrobranche de 12 parcours dès 3 ans, installé dans une pinède à l'abri du mistral.",
    tip:"Réserver en ligne le week-end. Prévoir 2 à 3h sur place.",
    prix:"Payant — env. 15 à 25 €/pers", niveau:"Dès 3 ans", lien:"https://www.indianforest.fr"},
-  {titre:"Décor Automates", cats:["Enfants"], commune:"Lambesc", zone:"moyen", distanceKm:25,
+  {titre:"Décor Automates", cats:["Kids"], commune:"Lambesc", zone:"moyen", distanceKm:25,
    adresse:null,
    desc:"Parc à automates chantants, aires de jeux, karts et parcours aventure sur 8ha ombragés.",
    tip:"Idéal 3-10 ans. Deux espaces snack sur place, prévoir la demi-journée.",
    prix:"Payant", niveau:"Familial", lien:null},
-  {titre:"Zoo de la Barben", cats:["Enfants","Patrimoine"], commune:"La Barben", zone:"moyen", distanceKm:27,
+  {titre:"Zoo de la Barben", cats:["Kids","Patrimoine"], commune:"La Barben", zone:"moyen", distanceKm:27,
    adresse:"Château de la Barben, 13330 La Barben",
    desc:"Plus grand parc animalier de la région : lions, girafes, panda roux, dans le parc du château.",
    tip:"Prévoir une demi-journée. Nourrissages à heures fixes, combinable avec la visite du château.",
    prix:"Payant — env. 20 €/pers", niveau:"Familial", lien:null},
-  {titre:"Dinosaur'Istres", cats:["Enfants"], commune:"Istres", zone:"moyen", distanceKm:24,
+  {titre:"Dinosaur'Istres", cats:["Kids"], commune:"Istres", zone:"moyen", distanceKm:24,
    adresse:null,
    desc:"Parc gratuit en plein air avec des dinosaures grandeur nature.",
    tip:"Accès libre et gratuit toute l'année. Aire de jeux à proximité, sympa en fin de journée.",
    prix:"Gratuit", niveau:"Familial", lien:null},
-  {titre:"Ferme pédagogique du Parc de Figuerolles", cats:["Enfants","Nature"], commune:"Martigues", zone:"moyen", distanceKm:25,
+  {titre:"Ferme pédagogique du Parc de Figuerolles", cats:["Kids","Nature"], commune:"Martigues", zone:"moyen", distanceKm:25,
    adresse:"Parc de Figuerolles, 13500 Martigues",
    desc:"130 hectares avec ferme pédagogique, jardin méditerranéen et sentier du patrimoine agricole.",
    tip:"Accès gratuit à la ferme. Prévoir un pique-nique, l'aire dédiée est agréable.",
    prix:"Gratuit", niveau:"Familial", lien:null},
-  {titre:"Ferme pédagogique communale", cats:["Enfants"], commune:"Saint-Mitre-les-Remparts", zone:"moyen", distanceKm:27,
+  {titre:"Ferme pédagogique communale", cats:["Kids"], commune:"Saint-Mitre-les-Remparts", zone:"moyen", distanceKm:27,
    adresse:null,
    desc:"Petite ferme avec ânes, chèvres, moutons, volailles et paons.",
    tip:"Accès libre, idéal pour les tout-petits. À combiner avec une balade autour de l'étang de Citis.",
    prix:"Gratuit", niveau:"Dès le plus jeune âge", lien:null},
-  {titre:"Block'Out — salle de bloc", cats:["Enfants","Sport"], commune:"Vitrolles", zone:"proche", distanceKm:13,
+  {titre:"Block'Out — salle de bloc", cats:["Kids","Sport"], commune:"Vitrolles", zone:"proche", distanceKm:13,
    adresse:null,
    desc:"Salle d'escalade de bloc conviviale, accessible aux débutants dès 5 ans.",
    tip:"Chaussons et matériel en location sur place. Formule anniversaire possible.",
    prix:"Payant", niveau:"Dès 5 ans", lien:null},
-  {titre:"Miroir aux Oiseaux & balade des canaux", cats:["Enfants","Patrimoine"], commune:"Martigues", zone:"moyen", distanceKm:25,
+  {titre:"Miroir aux Oiseaux & balade des canaux", cats:["Kids","Patrimoine"], commune:"Martigues", zone:"moyen", distanceKm:25,
    image:"https://commons.wikimedia.org/wiki/Special:FilePath/Martigues%20-%20Miroir%20aux%20Oiseaux.jpg?width=800",
    adresse:"Quartier de l'Île, 13500 Martigues",
    desc:"Façades colorées reflétées dans l'eau du canal Saint-Sébastien, glaces et jeux sur les quais.",
    tip:"Parking de l'Île payant. Jolie balade en fin d'après-midi, lumière dorée sur les façades.",
    prix:"Gratuit", niveau:"Familial", lien:null},
-  {titre:"Petit train de la Sainte-Victoire", cats:["Enfants"], commune:"Saint-Antonin-sur-Bayon", zone:"pepite", distanceKm:38,
+  {titre:"Petit train de la Sainte-Victoire", cats:["Kids"], commune:"Saint-Antonin-sur-Bayon", zone:"pepite", distanceKm:38,
    adresse:null,
    desc:"Balade en petit train d'environ 40 minutes dans la campagne au pied de la montagne Sainte-Victoire.",
    tip:"Sympa avec de jeunes enfants. Horaires saisonniers à vérifier avant de partir.",
    prix:"Payant", niveau:"Familial", lien:null},
- 
+
   // --- PATRIMOINE & VISITES ---
   {titre:"Vieux Velaux — château des Quatre Tours", cats:["Patrimoine"], commune:"Velaux", zone:"proche", distanceKm:0,
    adresse:"Place F. Caire, 13880 Velaux",
@@ -647,14 +675,14 @@ const DEMO_SPOTS = [
    desc:"Village perché des Alpilles, chapelle Saint-Sixte et vestiges du donjon en haut du village.",
    tip:"Marché provençal le vendredi. Bonnes tables pour prolonger la sortie.",
    prix:"Gratuit", niveau:"Facile", lien:null},
- 
+
   // --- LOISIRS & SPORT ---
   {titre:"Climb Up Aix-en-Provence", cats:["Sport"], commune:"Aix-en-Provence", zone:"moyen", distanceKm:25,
    adresse:null,
    desc:"Salle d'escalade de voie et de bloc accessible à tous niveaux.",
    tip:"Forfaits découverte avec matériel inclus. Cours enfants proposés en semaine.",
    prix:"Payant", niveau:"Tous niveaux", lien:null},
-  {titre:"Parc accrobranche du Montaiguet", cats:["Sport","Enfants"], commune:"Aix-en-Provence", zone:"moyen", distanceKm:25,
+  {titre:"Parc accrobranche du Montaiguet", cats:["Sport","Kids"], commune:"Aix-en-Provence", zone:"moyen", distanceKm:25,
    adresse:"Chemin du Viaduc, 13090 Aix-en-Provence",
    desc:"Parcours jusqu'à 20 m de haut, dans une forêt à l'abri du mistral.",
    tip:"Prévoir 2h sur place. La carte bleue n'est pas acceptée sur site, prévoir des espèces.",
@@ -675,7 +703,7 @@ const DEMO_SPOTS = [
    tip:"Passages techniques par endroits, déconseillé aux débutants et aux enfants en bas âge.",
    prix:"Gratuit", niveau:"Soutenu", lien:null}
 ];
- 
+
 let app, db, auth, currentUid = null, isAdmin = false;
 let spots = [];
 let dataLoaded = false;
@@ -685,7 +713,7 @@ let activeCommune = "Toutes";
 let sortMode = "distance";
 let viewMode = "board";
 let onlyFree = false;
- 
+
 function showConfigWarning(msg){
   let el = document.getElementById('configWarning');
   if(!el){
@@ -696,7 +724,7 @@ function showConfigWarning(msg){
   }
   el.innerHTML = '⚠️ ' + msg;
 }
- 
+
 function startListening(){
   const q = query(collection(db,'spots'), orderBy('titre','asc'));
   onSnapshot(q, snap=>{
@@ -709,12 +737,12 @@ function startListening(){
     showConfigWarning("Erreur Firestore : " + err.message + ". Vérifie les règles de sécurité Firestore.");
   });
 }
- 
+
 function updateAdminState(user){
   isAdmin = !!(user && !user.isAnonymous && user.uid === ADMIN_UID);
   renderAdminBadge();
 }
- 
+
 if(CONFIG_READY){
   app = initializeApp(firebaseConfig);
   db = getFirestore(app);
@@ -735,9 +763,9 @@ if(CONFIG_READY){
 } else {
   showConfigWarning("Configure ta clé Firebase dans le &lt;script&gt; (objet <code>firebaseConfig</code>) pour activer la sauvegarde. Sans ça, rien n'est persistant.");
 }
- 
+
 function catClass(c){ return "cat-" + c; }
- 
+
 function getFilteredList(){
   let list = spots.filter(s=>
     (activeCat==='Toutes' || (s.cats||[]).includes(activeCat)) &&
@@ -752,15 +780,15 @@ function getFilteredList(){
   }
   return list;
 }
- 
+
 function communeList(){
   return [...new Set(spots.map(s=>s.commune).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
 }
- 
+
 function renderModeToggle(){
   document.getElementById('freeToggle').classList.toggle('active', onlyFree);
 }
- 
+
 function renderFilters(){
   const el = document.getElementById('filters');
   let html = `<button class="pill ${activeCat==='Toutes'?'active':''}" data-cat="Toutes">Toutes</button>`;
@@ -776,7 +804,7 @@ function renderFilters(){
     <button class="pill ${sortMode==='alpha'?'active':''}" data-sort="alpha">🔤 A-Z</button>
   </div>`;
   el.innerHTML = html;
- 
+
   el.querySelectorAll('[data-cat]').forEach(btn=>{
     btn.onclick = ()=>{ activeCat = btn.dataset.cat; render(); };
   });
@@ -785,7 +813,7 @@ function renderFilters(){
   });
   document.getElementById('communeSelect').onchange = (e)=>{ activeCommune = e.target.value; render(); };
 }
- 
+
 function renderZoneFilterBar(){
   const bar = document.getElementById('zoneFilterBar');
   bar.style.display = 'flex';
@@ -796,7 +824,7 @@ function renderZoneFilterBar(){
     btn.onclick = ()=>{ activeZone = btn.dataset.zone; render(); };
   });
 }
- 
+
 async function seedDemoData(){
   if(!isAdmin){ alert("Connecte-toi en admin pour importer les spots de départ."); return; }
   try{
@@ -812,7 +840,7 @@ async function seedDemoData(){
     if(b){ b.disabled = false; b.textContent = "＋ Importer les spots de départ"; }
   }
 }
- 
+
 function emptyStateHtml(forScroll){
   if(!CONFIG_READY){
     const msg = `<div style="margin-top:10px; opacity:0.8;">Configure Firebase pour ajouter des spots.</div>`;
@@ -841,12 +869,12 @@ function emptyStateHtml(forScroll){
   }
   return `<div class="empty">Aucun spot ici pour l'instant.<br>${btn}</div>`;
 }
- 
+
 function bindSeedBtn(el){
   const b = el.querySelector('#seedBtn');
   if(b) b.onclick = ()=>{ b.disabled = true; b.textContent = 'Import en cours...'; seedDemoData(); };
 }
- 
+
 function renderAdminBadge(){
   const el = document.getElementById('adminZone');
   const fab = document.getElementById('openPublish');
@@ -870,7 +898,7 @@ function renderAdminBadge(){
     document.getElementById('adminLoginBtn').onclick = openLoginForm;
   }
 }
- 
+
 function openLoginForm(){
   document.getElementById('modalRoot').innerHTML = `
   <div class="overlay" id="overlay">
@@ -895,7 +923,7 @@ function openLoginForm(){
       .catch(err=>{ document.getElementById('adm-error').textContent = "Échec : " + err.message; });
   };
 }
- 
+
 function openDeleteAllConfirm(){
   document.getElementById('modalRoot').innerHTML = `
   <div class="overlay" id="overlay">
@@ -940,7 +968,7 @@ function openDeleteAllConfirm(){
     }
   };
 }
- 
+
 function toExportFormat(){
   return spots.map(s=>({
     titre: s.titre,
@@ -957,7 +985,7 @@ function toExportFormat(){
     lien: s.lien || null
   }));
 }
- 
+
 function exportJson(){
   const clean = toExportFormat();
   const blob = new Blob([JSON.stringify(clean, null, 2)], {type:"application/json"});
@@ -970,7 +998,7 @@ function exportJson(){
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
- 
+
 function openBulkImport(){
   document.getElementById('modalRoot').innerHTML = `
   <div class="overlay" id="overlay">
@@ -1015,11 +1043,11 @@ function openBulkImport(){
     setTimeout(closeModal, 1500);
   };
 }
- 
+
 function closeModal(){
   document.getElementById('modalRoot').innerHTML = '';
 }
- 
+
 function openPublishForm(editing){
   if(!isAdmin){
     alert("Seul l'administrateur peut ajouter un spot.");
@@ -1071,7 +1099,7 @@ function openPublishForm(editing){
   </div>`;
   document.getElementById('overlay').onclick = (e)=>{ if(e.target.id==='overlay') closeModal(); };
   document.getElementById('closeModal').onclick = closeModal;
- 
+
   document.getElementById('f-submit').onclick = async ()=>{
     const titre = document.getElementById('f-titre').value.trim();
     if(!titre){ document.getElementById('f-titre').focus(); return; }
@@ -1115,7 +1143,7 @@ function openPublishForm(editing){
     }
   };
 }
- 
+
 function openDetail(s){
   document.getElementById('modalRoot').innerHTML = `
   <div class="overlay" id="overlay">
@@ -1156,7 +1184,7 @@ function openDetail(s){
     };
   }
 }
- 
+
 function renderBoard(){
   const board = document.getElementById('board');
   const list = getFilteredList();
@@ -1186,10 +1214,10 @@ function renderBoard(){
     };
   });
 }
- 
+
 document.getElementById('openPublish').onclick = ()=> openPublishForm();
 document.getElementById('freeToggle').onclick = ()=>{ onlyFree = !onlyFree; render(); };
- 
+
 function render(){
   renderModeToggle();
   renderAdminBadge();
@@ -1201,4 +1229,3 @@ render();
 </script>
 </body>
 </html>
- 
