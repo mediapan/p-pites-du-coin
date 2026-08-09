@@ -882,10 +882,21 @@ function renderEauFilterBar(){
 async function seedDemoData(){
   if(!isAdmin){ alert("Connecte-toi en admin pour importer les spots de départ."); return; }
   try{
+    const existingTitles = new Set(spots.map(s=>(s.titre||'').trim().toLowerCase()));
+    let added = 0, skipped = 0;
     for(const item of DEMO_SPOTS){
+      if(existingTitles.has((item.titre||'').trim().toLowerCase())){
+        skipped++;
+        continue;
+      }
       await addDoc(collection(db,'spots'), {
         ...item, createdAt: serverTimestamp()
       });
+      existingTitles.add((item.titre||'').trim().toLowerCase());
+      added++;
+    }
+    if(skipped > 0){
+      console.log(`Import : ${added} ajoutés, ${skipped} déjà présents (ignorés pour éviter les doublons).`);
     }
   }catch(err){
     console.error(err);
