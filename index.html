@@ -134,9 +134,7 @@
     font-family:'Big Shoulders Display',sans-serif; font-weight:700; font-size:13px;
     color:var(--ochre); white-space:nowrap;
   }
-  .cat-Nature{background:var(--cyprus);}
   .cat-Kids{background:var(--ochre);}
-  .cat-Patrimoine{background:#8a6b3f;}
   .cat-Sport{background:var(--lavender);}
   .cat-Plages{background:var(--azure);}
   .cat-Amis{background:#a3345c;}
@@ -373,9 +371,9 @@ const CONFIG_READY = firebaseConfig.apiKey !== "YOUR_API_KEY";
 // Firebase Console > Authentication > Users > copie ton UID ici.
 const ADMIN_UID = "5FMDbRE7PwgJukowGITjx3doV022";
 
-const CATS = ["Nature","Kids","Patrimoine","Sport","Plages","Amis"];
-const CAT_LABEL = {Nature:"Nature & Randos", Kids:"Kids", Patrimoine:"Patrimoine & Visites", Sport:"Loisirs & Sport", Plages:"Plages & Baignade", Amis:"Fun entre adultes"};
-const CAT_EMOJI = {Nature:"🥾", Kids:"🎠", Patrimoine:"🏰", Sport:"🧗", Plages:"🏖️", Amis:"🥂"};
+const CATS = ["Kids","Sport","Plages","Amis"];
+const CAT_LABEL = {Kids:"Kids", Sport:"Loisirs & Sport", Plages:"Plages & Baignade", Amis:"Fun entre amis"};
+const CAT_EMOJI = {Kids:"🎠", Sport:"🧗", Plages:"🏖️", Amis:"🥂"};
 
 const ZONES = ["proche","moyen","pepite"];
 const ZONE_LABEL = {proche:"À côté (0–20 km)", moyen:"Dans le coin (20–35 km)", pepite:"Vaut le détour (35 km+)"};
@@ -526,7 +524,7 @@ const DEMO_SPOTS = [
    desc:"Plage aménagée au bord de l'étang de l'Olivier, eau calme sans marée ni vagues, idéale petits enfants.",
    tip:"Base nautique attenante pour louer paddle et canoë. Aire de jeux et snacks à proximité.",
    prix:"Gratuit", niveau:"Familial, dès le plus jeune âge", lien:null},
-  {titre:"Plages des Saintes-Maries-de-la-Mer", cats:["Plages","Nature"], commune:"Saintes-Maries-de-la-Mer", zone:"pepite", distanceKm:70,
+  {titre:"Plages des Saintes-Maries-de-la-Mer", cats:["Plages"], commune:"Saintes-Maries-de-la-Mer", zone:"pepite", distanceKm:70,
    eau:"mer",
    adresse:null,
    desc:"Immenses plages de sable sauvage à perte de vue, entre mer et marais, au cœur de la Camargue.",
@@ -534,68 +532,36 @@ const DEMO_SPOTS = [
    prix:"Gratuit (parking payant en saison)", niveau:"Familial", lien:null},
 
   // --- NATURE & RANDOS ---
-  {titre:"Bord de l'étang de Berre — Parc de la Garenne", cats:["Nature"], commune:"Velaux", zone:"proche", distanceKm:0,
-   adresse:"Parc de la Garenne, 13880 Velaux",
-   desc:"Promenade familiale ombragée au bord de l'eau, avec vue dégagée sur l'étang.",
-   tip:"Idéal en fin de journée. Jeux pour enfants sur place, accès direct depuis le centre du village.",
-   prix:"Gratuit", niveau:"Familial, accessible poussette", lien:null},
-  {titre:"Ruines de la chapelle Sainte-Entropie", cats:["Nature","Patrimoine"], commune:"Velaux", zone:"proche", distanceKm:1,
-   adresse:null,
-   desc:"Boucle facile de 6 km menant à des ruines historiques et à un beau point de vue sur le village.",
-   tip:"Départ au cimetière Saint-Martin (le haut). Comptez environ 1h30-2h avec la montée jusqu'au sommet de la colline.",
-   prix:"Gratuit", niveau:"Facile", lien:null},
-  {titre:"Croix de Rognac", cats:["Nature"], commune:"Rognac", zone:"proche", distanceKm:6,
-   adresse:null,
-   desc:"Point de vue panoramique sur l'étang de Berre, Vitrolles et les falaises de Rognac.",
-   tip:"Meilleur moment au coucher du soleil. Chemin caillouteux par endroits, prévoir de bonnes chaussures.",
-   prix:"Gratuit", niveau:"Moyen, quelques passages raides", lien:null},
-  {titre:"Plateau de l'Arbois", cats:["Nature"], commune:"Vitrolles", zone:"proche", distanceKm:13,
-   adresse:null,
-   desc:"Garrigue et vues dégagées sur l'étang de Berre, ancien site d'essais aéronautiques.",
-   tip:"Réseau de sentiers balisés. Accès parfois restreint l'été en cas de risque incendie élevé — vérifier avant de partir.",
-   prix:"Gratuit", niveau:"Facile à moyen", lien:null},
-  {titre:"Aqueduc de Roquefavour & bord de l'Arc", cats:["Nature","Patrimoine"], commune:"Ventabren", zone:"proche", distanceKm:12,
+  {titre:"Aqueduc de Roquefavour & bord de l'Arc", cats:["Plages"], commune:"Ventabren", zone:"proche", distanceKm:12,
    eau:"riviere",
    image:"https://commons.wikimedia.org/wiki/Special:FilePath/Aqueduc%20de%20Roquefavour%202.jpg?width=800",
    adresse:"Le Moulin du Pont, 13122 Ventabren",
    desc:"Le plus grand aqueduc en pierre de maçonnerie d'Europe, avec possibilité de baignade dans l'Arc en contrebas.",
    tip:"Parking gratuit au rond-point du Moulin du Pont. Baignade sauvage à ses risques, site très fréquenté l'été.",
    prix:"Gratuit", niveau:"Familial", lien:null},
-  {titre:"Calanque de Niolon", cats:["Nature","Plages"], commune:"Le Rove", zone:"proche", distanceKm:20,
+  {titre:"Calanque de Niolon", cats:["Plages"], commune:"Le Rove", zone:"proche", distanceKm:20,
    eau:"mer",
    adresse:null,
    desc:"Petite crique à l'eau turquoise nichée près d'un port de pêche, moins connue que les grandes calanques.",
    tip:"Accès à pied depuis le petit port. Arriver tôt en été pour trouver une place à l'ombre.",
    prix:"Gratuit", niveau:"Facile", lien:null},
-  {titre:"Source de l'Infernet", cats:["Nature"], commune:"Les Pennes-Mirabeau", zone:"proche", distanceKm:18,
-   adresse:null,
-   desc:"Petite cascade et vasques d'eau fraîche façon mini-canyon, au fil de la Cadière.",
-   tip:"À faire idéalement quelques jours après la pluie pour voir la cascade en eau. Accès parfois boueux.",
-   prix:"Gratuit", niveau:"Facile", lien:null},
-  {titre:"Sentier du littoral — Côte Bleue", cats:["Nature","Sport"], commune:"Carry-le-Rouet", zone:"moyen", distanceKm:24,
+  {titre:"Sentier du littoral — Côte Bleue", cats:["Sport"], commune:"Carry-le-Rouet", zone:"moyen", distanceKm:24,
    adresse:null,
    desc:"Balade en corniche avec vue mer permanente, plusieurs criques de baignade sur le trajet.",
    tip:"Tronçon Carry → Sausset-les-Pins : environ 1h30 à pied. Prévoir des chaussures de marche, ombre rare.",
    prix:"Gratuit", niveau:"Moyen", lien:null},
-  {titre:"Montagne Sainte-Victoire", cats:["Nature","Sport"], commune:"Vauvenargues", zone:"pepite", distanceKm:45,
+  {titre:"Montagne Sainte-Victoire", cats:["Sport"], commune:"Vauvenargues", zone:"pepite", distanceKm:45,
    image:"https://commons.wikimedia.org/wiki/Special:FilePath/Montagne%20Sainte-Victoire%20depuis%20Saint-Antonin-sur-Bayon.jpg?width=800",
    adresse:"Barrage de Bimont, 13100 Aix-en-Provence",
    desc:"La montagne de Cézanne : randos vers le prieuré et la Croix de Provence, vues à 360°.",
    tip:"Départ conseillé au barrage de Bimont. Prévoir beaucoup d'eau, l'accès peut être fermé les jours de fort mistral.",
    prix:"Gratuit", niveau:"Soutenu", lien:null},
-  {titre:"Calanques — Port-Miou à En-Vau", cats:["Nature","Sport"], commune:"Cassis", zone:"pepite", distanceKm:50,
+  {titre:"Calanques — Port-Miou à En-Vau", cats:["Sport"], commune:"Cassis", zone:"pepite", distanceKm:50,
    image:"https://commons.wikimedia.org/wiki/Special:FilePath/Calanque%20d%27En%20Vau-Cassis.jpg?width=800",
    adresse:null,
    desc:"Le grand classique : criques d'eau turquoise encaissées entre falaises blanches.",
    tip:"Partir tôt le matin. Accès à certaines calanques soumis à réservation en ligne l'été (fort risque incendie).",
    prix:"Gratuit (réservation obligatoire en été)", niveau:"Moyen, 3h AR", lien:"https://www.calanques-parcnational.fr"},
-  {titre:"Camargue — Étang du Vaccarès & Saintes-Maries", cats:["Nature"], commune:"Saintes-Maries-de-la-Mer", zone:"pepite", distanceKm:70,
-   image:"https://commons.wikimedia.org/wiki/Special:FilePath/Flamants%20roses%20en%20Camargue.jpg?width=800",
-   adresse:null,
-   desc:"Flamants roses, chevaux et taureaux en liberté, plages sauvages à perte de vue.",
-   tip:"Prévoir la journée. Location de vélo agréable le long des digues. Moustiques redoutables au printemps — anti-moustique indispensable.",
-   prix:"Gratuit (parking payant sur certains sites)", niveau:"Facile", lien:null},
-
   // --- ENFANTS & FAMILLES ---
   {titre:"Indian Forest — Decathlon Village", cats:["Kids","Sport"], commune:"Bouc-Bel-Air", zone:"moyen", distanceKm:30,
    adresse:"Decathlon Village, 13320 Bouc-Bel-Air",
@@ -607,7 +573,7 @@ const DEMO_SPOTS = [
    desc:"Parc à automates chantants, aires de jeux, karts et parcours aventure sur 8ha ombragés.",
    tip:"Idéal 3-10 ans. Deux espaces snack sur place, prévoir la demi-journée.",
    prix:"Payant", niveau:"Familial", lien:null},
-  {titre:"Zoo de la Barben", cats:["Kids","Patrimoine"], commune:"La Barben", zone:"moyen", distanceKm:27,
+  {titre:"Zoo de la Barben", cats:["Kids"], commune:"La Barben", zone:"moyen", distanceKm:27,
    adresse:"Château de la Barben, 13330 La Barben",
    desc:"Plus grand parc animalier de la région : lions, girafes, panda roux, dans le parc du château.",
    tip:"Prévoir une demi-journée. Nourrissages à heures fixes, combinable avec la visite du château.",
@@ -617,7 +583,7 @@ const DEMO_SPOTS = [
    desc:"Parc gratuit en plein air avec des dinosaures grandeur nature.",
    tip:"Accès libre et gratuit toute l'année. Aire de jeux à proximité, sympa en fin de journée.",
    prix:"Gratuit", niveau:"Familial", lien:null},
-  {titre:"Ferme pédagogique du Parc de Figuerolles", cats:["Kids","Nature"], commune:"Martigues", zone:"moyen", distanceKm:25,
+  {titre:"Ferme pédagogique du Parc de Figuerolles", cats:["Kids"], commune:"Martigues", zone:"moyen", distanceKm:25,
    adresse:"Parc de Figuerolles, 13500 Martigues",
    desc:"130 hectares avec ferme pédagogique, jardin méditerranéen et sentier du patrimoine agricole.",
    tip:"Accès gratuit à la ferme. Prévoir un pique-nique, l'aire dédiée est agréable.",
@@ -632,7 +598,7 @@ const DEMO_SPOTS = [
    desc:"Salle d'escalade de bloc conviviale, accessible aux débutants dès 5 ans.",
    tip:"Chaussons et matériel en location sur place. Formule anniversaire possible.",
    prix:"Payant", niveau:"Dès 5 ans", lien:null},
-  {titre:"Miroir aux Oiseaux & balade des canaux", cats:["Kids","Patrimoine"], commune:"Martigues", zone:"moyen", distanceKm:25,
+  {titre:"Miroir aux Oiseaux & balade des canaux", cats:["Kids"], commune:"Martigues", zone:"moyen", distanceKm:25,
    image:"https://commons.wikimedia.org/wiki/Special:FilePath/Martigues%20-%20Miroir%20aux%20Oiseaux.jpg?width=800",
    adresse:"Quartier de l'Île, 13500 Martigues",
    desc:"Façades colorées reflétées dans l'eau du canal Saint-Sébastien, glaces et jeux sur les quais.",
@@ -645,61 +611,6 @@ const DEMO_SPOTS = [
    prix:"Payant", niveau:"Familial", lien:null},
 
   // --- PATRIMOINE & VISITES ---
-  {titre:"Vieux Velaux — château des Quatre Tours", cats:["Patrimoine"], commune:"Velaux", zone:"proche", distanceKm:0,
-   adresse:"Place F. Caire, 13880 Velaux",
-   desc:"Cœur historique du village : ruelles pittoresques et panorama sur l'étang depuis le haut du village.",
-   tip:"Parcours balisé de 9,7 km « entre village et colline » au départ du cimetière Saint-Martin (flyer dispo en mairie).",
-   prix:"Gratuit", niveau:"Facile", lien:null},
-  {titre:"Village perché de Ventabren", cats:["Patrimoine"], commune:"Ventabren", zone:"proche", distanceKm:12,
-   image:"https://commons.wikimedia.org/wiki/Special:FilePath/Ventabren%20village.jpg?width=800",
-   adresse:null,
-   desc:"Vestiges du château de la Reine Jeanne, ruelles perchées, vue sur toute la plaine aixoise.",
-   tip:"Se garer en bas du village et monter à pied. Très photogénique au coucher de soleil.",
-   prix:"Gratuit", niveau:"Facile", lien:null},
-  {titre:"Village perché d'Éguilles", cats:["Patrimoine"], commune:"Éguilles", zone:"moyen", distanceKm:22,
-   adresse:null,
-   desc:"Façades en pierre blonde, escaliers étroits et placettes bordées d'oliviers.",
-   tip:"Marché le mercredi matin. Belle vue sur la plaine aixoise depuis l'esplanade du village.",
-   prix:"Gratuit", niveau:"Facile", lien:null},
-  {titre:"Aix-en-Provence — cours Mirabeau", cats:["Patrimoine"], commune:"Aix-en-Provence", zone:"moyen", distanceKm:25,
-   image:"https://commons.wikimedia.org/wiki/Special:FilePath/2016%20Aix-en-Provence%20-%20Le%20cours%20Mirabeau.jpg?width=800",
-   adresse:null,
-   desc:"Fontaines, hôtels particuliers, ateliers de Cézanne : la grande ville d'art la plus proche de Velaux.",
-   tip:"Se garer en parking-relais. Marché provençal les mardi, jeudi et samedi matin dans le centre.",
-   prix:"Gratuit (musées payants)", niveau:"Familial", lien:null},
-  {titre:"Salon-de-Provence — château de l'Empéri", cats:["Patrimoine"], commune:"Salon-de-Provence", zone:"moyen", distanceKm:20,
-   image:"https://commons.wikimedia.org/wiki/Special:FilePath/Emperi.jpg?width=800",
-   adresse:null,
-   desc:"Cité de Nostradamus et de la cavalerie, château médiéval dominant la ville.",
-   tip:"Le château offre une vue superbe sur la ville. Combiner avec une balade dans le centre piéton.",
-   prix:"Musées payants, centre libre", niveau:"Familial", lien:null},
-  {titre:"Château de La Barben", cats:["Patrimoine"], commune:"La Barben", zone:"moyen", distanceKm:27,
-   adresse:null,
-   desc:"Château médiéval habité depuis le XIe siècle, dominant la vallée de la Touloubre.",
-   tip:"Combinable avec la visite du zoo attenant pour une journée complète.",
-   prix:"Payant", niveau:"Familial", lien:null},
-  {titre:"Les Baux-de-Provence", cats:["Patrimoine"], commune:"Les Baux-de-Provence", zone:"pepite", distanceKm:45,
-   image:"https://commons.wikimedia.org/wiki/Special:FilePath/13520%20Les%20Baux-de-Provence%2C%20France%20-%20panoramio%20%282%29.jpg?width=800",
-   adresse:null,
-   desc:"Village perché classé parmi les plus beaux de France, accroché à un éperon rocheux des Alpilles.",
-   tip:"Arriver tôt pour éviter l'affluence. Les Carrières de Lumières juste en contrebas valent le détour.",
-   prix:"Village libre, château et carrières payants", niveau:"Familial", lien:null},
-  {titre:"Saint-Rémy-de-Provence & Glanum", cats:["Patrimoine"], commune:"Saint-Rémy-de-Provence", zone:"pepite", distanceKm:48,
-   adresse:null,
-   desc:"Ruelles provençales, arc antique et mausolée romain aux portes de la ville.",
-   tip:"Le marché du mercredi matin est réputé dans toute la région.",
-   prix:"Ville libre, site de Glanum payant", niveau:"Familial", lien:null},
-  {titre:"Abbaye de Silvacane", cats:["Patrimoine"], commune:"La Roque-d'Anthéron", zone:"pepite", distanceKm:40,
-   adresse:null,
-   desc:"Abbaye cistercienne du XIIe siècle remarquablement conservée, au bord de la Durance.",
-   tip:"À combiner avec le festival de piano au château voisin en été.",
-   prix:"Payant", niveau:"Familial", lien:null},
-  {titre:"Eygalières", cats:["Patrimoine"], commune:"Eygalières", zone:"pepite", distanceKm:50,
-   adresse:null,
-   desc:"Village perché des Alpilles, chapelle Saint-Sixte et vestiges du donjon en haut du village.",
-   tip:"Marché provençal le vendredi. Bonnes tables pour prolonger la sortie.",
-   prix:"Gratuit", niveau:"Facile", lien:null},
-
   // --- LOISIRS & SPORT ---
   {titre:"Climb Up Aix-en-Provence", cats:["Sport"], commune:"Aix-en-Provence", zone:"moyen", distanceKm:25,
    adresse:null,
@@ -716,12 +627,12 @@ const DEMO_SPOTS = [
    desc:"Paddle, voile légère et canoë sur le plan d'eau, sans le vent ni la houle de la mer.",
    tip:"Vérifier les horaires d'ouverture saisonniers auprès de la base ou de la mairie avant de s'y rendre.",
    prix:"Payant", niveau:"Tous niveaux", lien:null},
-  {titre:"Sentier sous-marin de la Côte Bleue", cats:["Sport","Nature"], commune:"Carry-le-Rouet", zone:"moyen", distanceKm:24,
+  {titre:"Sentier sous-marin de la Côte Bleue", cats:["Sport"], commune:"Carry-le-Rouet", zone:"moyen", distanceKm:24,
    adresse:null,
    desc:"Parc marin protégé avec un sentier sous-marin balisé, accessible en palmes-masque-tuba.",
    tip:"Le sentier sous-marin est gratuit et signalé par des bouées. Sorties en club pour la plongée bouteille.",
    prix:"Gratuit (sentier), payant en club", niveau:"Facile", lien:null},
-  {titre:"Vallon du Saut — escalade & curiosités géologiques", cats:["Sport","Nature"], commune:"Aix-en-Provence", zone:"moyen", distanceKm:28,
+  {titre:"Vallon du Saut — escalade & curiosités géologiques", cats:["Sport"], commune:"Aix-en-Provence", zone:"moyen", distanceKm:28,
    adresse:null,
    desc:"Grande boucle technique vers les vallons de Valtrède et de Fauconnière, roche percée et parois d'escalade.",
    tip:"Passages techniques par endroits, déconseillé aux débutants et aux enfants en bas âge.",
@@ -729,9 +640,7 @@ const DEMO_SPOTS = [
 ];
 
 const CAT_FALLBACK_IMAGE = {
-  Nature:"https://commons.wikimedia.org/wiki/Special:FilePath/Montagne%20Sainte-Victoire%20depuis%20Saint-Antonin-sur-Bayon.jpg?width=800",
   Kids:"https://commons.wikimedia.org/wiki/Special:FilePath/Children%27s%20Playground%20In%20Mt%20Albert.jpg?width=800",
-  Patrimoine:"https://commons.wikimedia.org/wiki/Special:FilePath/Ventabren%20village.jpg?width=800",
   Sport:"https://commons.wikimedia.org/wiki/Special:FilePath/Rock%20climbing%20wall.jpg?width=800",
   Plages:"https://commons.wikimedia.org/wiki/Special:FilePath/Plage%20de%20la%20Romaniquette.jpg?width=800",
   Amis:"https://commons.wikimedia.org/wiki/Special:FilePath/Toasting.JPG?width=800"
@@ -1074,7 +983,7 @@ function openBulkImport(){
       <div style="font-family:'Space Mono',monospace; font-size:11.5px; color:var(--ink-soft); margin-bottom:10px; line-height:1.6;">
         Colle un tableau JSON de spots (même format que l'export). Chaque spot est ajouté comme nouveau document.
       </div>
-      <textarea id="bulk-json" style="width:100%; min-height:220px; font-family:'Space Mono',monospace; font-size:12px; padding:10px; border:1px solid #b6935c88; background:#fffdf6; border-radius:2px;" placeholder='[{"titre":"...", "cats":["Nature"], "commune":"Velaux", "zone":"proche", "distanceKm":0, "desc":"...", "tip":"...", "prix":"Gratuit"}]'></textarea>
+      <textarea id="bulk-json" style="width:100%; min-height:220px; font-family:'Space Mono',monospace; font-size:12px; padding:10px; border:1px solid #b6935c88; background:#fffdf6; border-radius:2px;" placeholder='[{"titre":"...", "cats":["Kids"], "commune":"Velaux", "zone":"proche", "distanceKm":0, "desc":"...", "tip":"...", "prix":"Gratuit"}]'></textarea>
       <div id="bulk-status" style="font-family:'Space Mono',monospace; font-size:12px; margin-top:8px;"></div>
       <button class="submit" id="bulk-submit">Importer ces spots</button>
     </div>
