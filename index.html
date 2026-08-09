@@ -137,9 +137,9 @@
     color:var(--ochre); white-space:nowrap;
   }
   .cat-Kids{background:var(--ochre);}
-  .cat-Sport{background:var(--lavender);}
   .cat-Plages{background:var(--azure);}
   .cat-Amis{background:#a3345c;}
+  .cat-Decouverte{background:#8a6b3f;}
 
   .flyer h3{
     font-family:'Big Shoulders Display', sans-serif;
@@ -373,9 +373,9 @@ const CONFIG_READY = firebaseConfig.apiKey !== "YOUR_API_KEY";
 // Firebase Console > Authentication > Users > copie ton UID ici.
 const ADMIN_UID = "5FMDbRE7PwgJukowGITjx3doV022";
 
-const CATS = ["Kids","Sport","Plages","Amis"];
-const CAT_LABEL = {Kids:"Kids", Sport:"Loisirs & Sport", Plages:"Plages & Baignade", Amis:"Fun entre amis"};
-const CAT_EMOJI = {Kids:"🎠", Sport:"🧗", Plages:"🏖️", Amis:"🥂"};
+const CATS = ["Kids","Plages","Amis","Decouverte"];
+const CAT_LABEL = {Kids:"Kids", Plages:"Plages & Baignade", Amis:"Fun entre amis", Decouverte:"Découverte"};
+const CAT_EMOJI = {Kids:"🎠", Plages:"🏖️", Amis:"🥂", Decouverte:"🗺️"};
 
 const ZONES = ["proche","moyen","pepite"];
 const ZONE_LABEL = {proche:"À côté (0–20 km)", moyen:"Dans le coin (20–35 km)", pepite:"Vaut le détour (35 km+)"};
@@ -394,7 +394,7 @@ function demoImg(bg, label){
 // (bouton "＋ Importer les spots de départ" visible en mode admin si la base est vide).
 const DEMO_SPOTS = [
   // --- ENTRE AMIS (ADULTES) ---
-  {titre:"Kart'Up Vitrolles", cats:["Amis","Sport"], commune:"Vitrolles", zone:"proche", distanceKm:13,
+  {titre:"Kart'Up Vitrolles", cats:["Amis"], commune:"Vitrolles", zone:"proche", distanceKm:13,
    adresse:null,
    desc:"Complexe multi-loisirs : karting indoor, bowling, laser game, quiz et karaoké, le tout sous le même toit.",
    tip:"Pratique par mauvais temps ou pour une soirée. Formules groupe et anniversaire disponibles, réservation conseillée le week-end.",
@@ -419,6 +419,72 @@ const DEMO_SPOTS = [
    desc:"16 pistes de bowling et 18 billards, ambiance conviviale pour une soirée entre amis.",
    tip:"Pratique en cas de mauvais temps. Formules groupes pour les grandes tablées.",
    prix:"Payant — tarif par partie", niveau:"Adultes et ados", lien:null},
+
+  // --- DÉCOUVERTE (patrimoine, artisanat, curiosités) ---
+  {titre:"Coopérative oléicole de Velaux", cats:["Decouverte"], commune:"Velaux", zone:"proche", distanceKm:0,
+   adresse:null,
+   desc:"Moulin à huile d'olive dans un cadre champêtre, boutique de produits du terroir (huile, tapenade, miel, confitures).",
+   tip:"Entrée libre, boutique ouverte toute l'année. Le plus proche de tous les spots du site — juste à côté de chez toi.",
+   prix:"Gratuit (visite boutique)", niveau:"Familial", lien:null},
+  {titre:"Vieux Velaux — château des Quatre Tours", cats:["Decouverte"], commune:"Velaux", zone:"proche", distanceKm:0,
+   adresse:"Place F. Caire, 13880 Velaux",
+   desc:"Cœur historique du village : ruelles pittoresques et panorama sur l'étang depuis le haut du village.",
+   tip:"Parcours balisé de 9,7 km « entre village et colline » au départ du cimetière Saint-Martin (flyer dispo en mairie).",
+   prix:"Gratuit", niveau:"Facile", lien:null},
+  {titre:"Village perché de Ventabren", cats:["Decouverte"], commune:"Ventabren", zone:"proche", distanceKm:12,
+   image:"https://commons.wikimedia.org/wiki/Special:FilePath/Ventabren%20village.jpg?width=800",
+   adresse:null,
+   desc:"Vestiges du château de la Reine Jeanne, ruelles perchées, vue sur toute la plaine aixoise.",
+   tip:"Se garer en bas du village et monter à pied. Très photogénique au coucher de soleil.",
+   prix:"Gratuit", niveau:"Facile", lien:null},
+  {titre:"Village perché d'Éguilles", cats:["Decouverte"], commune:"Éguilles", zone:"moyen", distanceKm:22,
+   adresse:null,
+   desc:"Façades en pierre blonde, escaliers étroits et placettes bordées d'oliviers.",
+   tip:"Marché le mercredi matin. Belle vue sur la plaine aixoise depuis l'esplanade du village.",
+   prix:"Gratuit", niveau:"Facile", lien:null},
+  {titre:"Aix-en-Provence — cours Mirabeau", cats:["Decouverte"], commune:"Aix-en-Provence", zone:"moyen", distanceKm:25,
+   image:"https://commons.wikimedia.org/wiki/Special:FilePath/2016%20Aix-en-Provence%20-%20Le%20cours%20Mirabeau.jpg?width=800",
+   adresse:null,
+   desc:"Fontaines, hôtels particuliers, ateliers de Cézanne : la grande ville d'art la plus proche de Velaux.",
+   tip:"Se garer en parking-relais. Marché provençal les mardi, jeudi et samedi matin dans le centre.",
+   prix:"Gratuit (musées payants)", niveau:"Familial", lien:null},
+  {titre:"Salon-de-Provence — château de l'Empéri", cats:["Decouverte"], commune:"Salon-de-Provence", zone:"moyen", distanceKm:20,
+   image:"https://commons.wikimedia.org/wiki/Special:FilePath/Emperi.jpg?width=800",
+   adresse:null,
+   desc:"Cité de Nostradamus et de la cavalerie, château médiéval dominant la ville.",
+   tip:"Le château offre une vue superbe sur la ville. Combiner avec une balade dans le centre piéton.",
+   prix:"Musées payants, centre libre", niveau:"Familial", lien:null},
+  {titre:"Savonnerie du Moulin à Grain", cats:["Decouverte"], commune:"Salon-de-Provence", zone:"moyen", distanceKm:20,
+   adresse:null,
+   desc:"Savonnerie artisanale installée dans une ancienne manufacture royale de 1747, en plein centre-ville.",
+   tip:"Visite gratuite, ateliers en famille dès 3 ans pour fabriquer son propre savon (sur réservation, ~15€/pers).",
+   prix:"Visite gratuite, ateliers payants", niveau:"Familial", lien:"https://www.savonneriedumoulinagrain.fr"},
+  {titre:"Château de La Barben", cats:["Decouverte"], commune:"La Barben", zone:"moyen", distanceKm:27,
+   adresse:null,
+   desc:"Château médiéval habité depuis le XIe siècle, dominant la vallée de la Touloubre.",
+   tip:"Combinable avec la visite du zoo attenant pour une journée complète.",
+   prix:"Payant", niveau:"Familial", lien:null},
+  {titre:"Les Baux-de-Provence", cats:["Decouverte"], commune:"Les Baux-de-Provence", zone:"pepite", distanceKm:45,
+   image:"https://commons.wikimedia.org/wiki/Special:FilePath/13520%20Les%20Baux-de-Provence%2C%20France%20-%20panoramio%20%282%29.jpg?width=800",
+   adresse:null,
+   desc:"Village perché classé parmi les plus beaux de France, accroché à un éperon rocheux des Alpilles.",
+   tip:"Arriver tôt pour éviter l'affluence. Les Carrières de Lumières juste en contrebas valent le détour.",
+   prix:"Village libre, château et carrières payants", niveau:"Familial", lien:null},
+  {titre:"Saint-Rémy-de-Provence & Glanum", cats:["Decouverte"], commune:"Saint-Rémy-de-Provence", zone:"pepite", distanceKm:48,
+   adresse:null,
+   desc:"Ruelles provençales, arc antique et mausolée romain aux portes de la ville.",
+   tip:"Le marché du mercredi matin est réputé dans toute la région.",
+   prix:"Ville libre, site de Glanum payant", niveau:"Familial", lien:null},
+  {titre:"Abbaye de Silvacane", cats:["Decouverte"], commune:"La Roque-d'Anthéron", zone:"pepite", distanceKm:40,
+   adresse:null,
+   desc:"Abbaye cistercienne du XIIe siècle remarquablement conservée, au bord de la Durance.",
+   tip:"À combiner avec le festival de piano au château voisin en été.",
+   prix:"Payant", niveau:"Familial", lien:null},
+  {titre:"Eygalières", cats:["Decouverte"], commune:"Eygalières", zone:"pepite", distanceKm:50,
+   adresse:null,
+   desc:"Village perché des Alpilles, chapelle Saint-Sixte et vestiges du donjon en haut du village.",
+   tip:"Marché provençal le vendredi. Bonnes tables pour prolonger la sortie.",
+   prix:"Gratuit", niveau:"Facile", lien:null},
 
   // --- PLAGES & BAIGNADE ---
   {titre:"Plage de la Corniche", cats:["Plages"], commune:"Sausset-les-Pins", zone:"moyen", distanceKm:22,
@@ -458,7 +524,7 @@ const DEMO_SPOTS = [
    desc:"Petite plage de sable et galets nichée dans une anse abritée, à deux pas de Couronne-Vieille.",
    tip:"Moins fréquentée que ses voisines, bon plan pour éviter la foule en pleine saison.",
    prix:"Gratuit", niveau:"Familial", lien:null},
-  {titre:"Plage des Catalans — musée subaquatique", cats:["Plages","Sport"], commune:"Marseille", zone:"moyen", distanceKm:32,
+  {titre:"Plage des Catalans — musée subaquatique", cats:["Plages"], commune:"Marseille", zone:"moyen", distanceKm:32,
    eau:"mer",
    image:"https://commons.wikimedia.org/wiki/Special:FilePath/Marseille%2C%20la%20plage%20des%20Catalans%20%2813169643263%29.jpg?width=800",
    adresse:"Anse des Catalans, 13007 Marseille",
@@ -547,25 +613,8 @@ const DEMO_SPOTS = [
    desc:"Petite crique à l'eau turquoise nichée près d'un port de pêche, moins connue que les grandes calanques.",
    tip:"Accès à pied depuis le petit port. Arriver tôt en été pour trouver une place à l'ombre.",
    prix:"Gratuit", niveau:"Facile", lien:null},
-  {titre:"Sentier du littoral — Côte Bleue", cats:["Sport"], commune:"Carry-le-Rouet", zone:"moyen", distanceKm:24,
-   adresse:null,
-   desc:"Balade en corniche avec vue mer permanente, plusieurs criques de baignade sur le trajet.",
-   tip:"Tronçon Carry → Sausset-les-Pins : environ 1h30 à pied. Prévoir des chaussures de marche, ombre rare.",
-   prix:"Gratuit", niveau:"Moyen", lien:null},
-  {titre:"Montagne Sainte-Victoire", cats:["Sport"], commune:"Vauvenargues", zone:"pepite", distanceKm:45,
-   image:"https://commons.wikimedia.org/wiki/Special:FilePath/Montagne%20Sainte-Victoire%20depuis%20Saint-Antonin-sur-Bayon.jpg?width=800",
-   adresse:"Barrage de Bimont, 13100 Aix-en-Provence",
-   desc:"La montagne de Cézanne : randos vers le prieuré et la Croix de Provence, vues à 360°.",
-   tip:"Départ conseillé au barrage de Bimont. Prévoir beaucoup d'eau, l'accès peut être fermé les jours de fort mistral.",
-   prix:"Gratuit", niveau:"Soutenu", lien:null},
-  {titre:"Calanques — Port-Miou à En-Vau", cats:["Sport"], commune:"Cassis", zone:"pepite", distanceKm:50,
-   image:"https://commons.wikimedia.org/wiki/Special:FilePath/Calanque%20d%27En%20Vau-Cassis.jpg?width=800",
-   adresse:null,
-   desc:"Le grand classique : criques d'eau turquoise encaissées entre falaises blanches.",
-   tip:"Partir tôt le matin. Accès à certaines calanques soumis à réservation en ligne l'été (fort risque incendie).",
-   prix:"Gratuit (réservation obligatoire en été)", niveau:"Moyen, 3h AR", lien:"https://www.calanques-parcnational.fr"},
   // --- ENFANTS & FAMILLES ---
-  {titre:"Indian Forest — Decathlon Village", cats:["Kids","Sport"], commune:"Bouc-Bel-Air", zone:"moyen", distanceKm:30,
+  {titre:"Indian Forest — Decathlon Village", cats:["Kids"], commune:"Bouc-Bel-Air", zone:"moyen", distanceKm:30,
    adresse:"Decathlon Village, 13320 Bouc-Bel-Air",
    desc:"Parc accrobranche de 12 parcours dès 3 ans, installé dans une pinède à l'abri du mistral.",
    tip:"Réserver en ligne le week-end. Prévoir 2 à 3h sur place.",
@@ -595,7 +644,7 @@ const DEMO_SPOTS = [
    desc:"Petite ferme avec ânes, chèvres, moutons, volailles et paons.",
    tip:"Accès libre, idéal pour les tout-petits. À combiner avec une balade autour de l'étang de Citis.",
    prix:"Gratuit", niveau:"Dès le plus jeune âge", lien:null},
-  {titre:"Block'Out — salle de bloc", cats:["Kids","Sport"], commune:"Vitrolles", zone:"proche", distanceKm:13,
+  {titre:"Block'Out — salle de bloc", cats:["Kids"], commune:"Vitrolles", zone:"proche", distanceKm:13,
    adresse:null,
    desc:"Salle d'escalade de bloc conviviale, accessible aux débutants dès 5 ans.",
    tip:"Chaussons et matériel en location sur place. Formule anniversaire possible.",
@@ -614,38 +663,18 @@ const DEMO_SPOTS = [
 
   // --- PATRIMOINE & VISITES ---
   // --- LOISIRS & SPORT ---
-  {titre:"Climb Up Aix-en-Provence", cats:["Sport"], commune:"Aix-en-Provence", zone:"moyen", distanceKm:25,
-   adresse:null,
-   desc:"Salle d'escalade de voie et de bloc accessible à tous niveaux.",
-   tip:"Forfaits découverte avec matériel inclus. Cours enfants proposés en semaine.",
-   prix:"Payant", niveau:"Tous niveaux", lien:null},
-  {titre:"Parc accrobranche du Montaiguet", cats:["Sport","Kids"], commune:"Aix-en-Provence", zone:"moyen", distanceKm:25,
+  {titre:"Parc accrobranche du Montaiguet", cats:["Kids"], commune:"Aix-en-Provence", zone:"moyen", distanceKm:25,
    adresse:"Chemin du Viaduc, 13090 Aix-en-Provence",
    desc:"Parcours jusqu'à 20 m de haut, dans une forêt à l'abri du mistral.",
    tip:"Prévoir 2h sur place. La carte bleue n'est pas acceptée sur site, prévoir des espèces.",
    prix:"Payant — dès 10 €/pers", niveau:"Dès 3 ans", lien:null},
-  {titre:"Base nautique de l'étang de Berre", cats:["Sport"], commune:"Saint-Chamas", zone:"proche", distanceKm:10,
-   adresse:null,
-   desc:"Paddle, voile légère et canoë sur le plan d'eau, sans le vent ni la houle de la mer.",
-   tip:"Vérifier les horaires d'ouverture saisonniers auprès de la base ou de la mairie avant de s'y rendre.",
-   prix:"Payant", niveau:"Tous niveaux", lien:null},
-  {titre:"Sentier sous-marin de la Côte Bleue", cats:["Sport"], commune:"Carry-le-Rouet", zone:"moyen", distanceKm:24,
-   adresse:null,
-   desc:"Parc marin protégé avec un sentier sous-marin balisé, accessible en palmes-masque-tuba.",
-   tip:"Le sentier sous-marin est gratuit et signalé par des bouées. Sorties en club pour la plongée bouteille.",
-   prix:"Gratuit (sentier), payant en club", niveau:"Facile", lien:null},
-  {titre:"Vallon du Saut — escalade & curiosités géologiques", cats:["Sport"], commune:"Aix-en-Provence", zone:"moyen", distanceKm:28,
-   adresse:null,
-   desc:"Grande boucle technique vers les vallons de Valtrède et de Fauconnière, roche percée et parois d'escalade.",
-   tip:"Passages techniques par endroits, déconseillé aux débutants et aux enfants en bas âge.",
-   prix:"Gratuit", niveau:"Soutenu", lien:null}
 ];
 
 const CAT_FALLBACK_IMAGE = {
   Kids:"https://commons.wikimedia.org/wiki/Special:FilePath/Children%27s%20Playground%20In%20Mt%20Albert.jpg?width=800",
-  Sport:"https://commons.wikimedia.org/wiki/Special:FilePath/Rock%20climbing%20wall.jpg?width=800",
   Plages:"https://commons.wikimedia.org/wiki/Special:FilePath/Plage%20de%20la%20Romaniquette.jpg?width=800",
-  Amis:"https://commons.wikimedia.org/wiki/Special:FilePath/Toasting.JPG?width=800"
+  Amis:"https://commons.wikimedia.org/wiki/Special:FilePath/Toasting.JPG?width=800",
+  Decouverte:"https://commons.wikimedia.org/wiki/Special:FilePath/Ventabren%20village.jpg?width=800"
 };
 function spotImage(s){
   return s.image || CAT_FALLBACK_IMAGE[(s.cats||[])[0]] || null;
