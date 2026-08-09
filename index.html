@@ -373,7 +373,7 @@ const CONFIG_READY = firebaseConfig.apiKey !== "YOUR_API_KEY";
 const ADMIN_UID = "5FMDbRE7PwgJukowGITjx3doV022";
 
 const CATS = ["Nature","Kids","Patrimoine","Sport","Plages","Amis"];
-const CAT_LABEL = {Nature:"Nature & Randos", Kids:"Kids", Patrimoine:"Patrimoine & Visites", Sport:"Loisirs & Sport", Plages:"Plages & Baignade", Amis:"Entre amis (adultes)"};
+const CAT_LABEL = {Nature:"Nature & Randos", Kids:"Kids", Patrimoine:"Patrimoine & Visites", Sport:"Loisirs & Sport", Plages:"Plages & Baignade", Amis:"Fun entre adultes"};
 const CAT_EMOJI = {Nature:"🥾", Kids:"🎠", Patrimoine:"🏰", Sport:"🧗", Plages:"🏖️", Amis:"🥂"};
 
 const ZONES = ["proche","moyen","pepite"];
@@ -703,6 +703,18 @@ const DEMO_SPOTS = [
    tip:"Passages techniques par endroits, déconseillé aux débutants et aux enfants en bas âge.",
    prix:"Gratuit", niveau:"Soutenu", lien:null}
 ];
+
+const CAT_FALLBACK_IMAGE = {
+  Nature:"https://commons.wikimedia.org/wiki/Special:FilePath/Montagne%20Sainte-Victoire%20depuis%20Saint-Antonin-sur-Bayon.jpg?width=800",
+  Kids:"https://commons.wikimedia.org/wiki/Special:FilePath/Children%27s%20Playground%20In%20Mt%20Albert.jpg?width=800",
+  Patrimoine:"https://commons.wikimedia.org/wiki/Special:FilePath/Ventabren%20village.jpg?width=800",
+  Sport:"https://commons.wikimedia.org/wiki/Special:FilePath/Rock%20climbing%20wall.jpg?width=800",
+  Plages:"https://commons.wikimedia.org/wiki/Special:FilePath/Plage%20de%20la%20Romaniquette.jpg?width=800",
+  Amis:"https://commons.wikimedia.org/wiki/Special:FilePath/Toasting.JPG?width=800"
+};
+function spotImage(s){
+  return s.image || CAT_FALLBACK_IMAGE[(s.cats||[])[0]] || null;
+}
 
 let app, db, auth, currentUid = null, isAdmin = false;
 let spots = [];
@@ -1145,11 +1157,12 @@ function openPublishForm(editing){
 }
 
 function openDetail(s){
+  const img = spotImage(s);
   document.getElementById('modalRoot').innerHTML = `
   <div class="overlay" id="overlay">
     <div class="modal">
       <button class="close" id="closeModal">✕ fermer</button>
-      ${s.image ? `<img class="detail-img" src="${s.image}" alt="${s.titre}" onerror="this.remove()">` : ''}
+      ${img ? `<img class="detail-img" src="${img}" alt="${s.titre}" onerror="this.remove()">` : ''}
       <div>
         ${(s.cats||[]).map(c=>`<span class="flyer-cat ${catClass(c)}">${CAT_EMOJI[c]} ${CAT_LABEL[c]}</span>`).join('')}
       </div>
@@ -1193,9 +1206,11 @@ function renderBoard(){
     bindSeedBtn(board);
     return;
   }
-  board.innerHTML = list.map(s=>`
+  board.innerHTML = list.map(s=>{
+    const img = spotImage(s);
+    return `
     <div class="flyer" data-id="${s.id}">
-      ${s.image ? `<img class="flyer-img" src="${s.image}" alt="${s.titre}" loading="lazy" onerror="this.remove()">` : ''}
+      ${img ? `<img class="flyer-img" src="${img}" alt="${s.titre}" loading="lazy" onerror="this.remove()">` : ''}
       ${(s.cats||[]).map(c=>`<span class="flyer-cat ${catClass(c)}">${CAT_EMOJI[c]} ${CAT_LABEL[c]}</span>`).join('')}
       <h3>${s.titre}</h3>
       <div class="meta"><span class="flyer-commune-tag">📍 ${s.commune}</span>${s.distanceKm!=null ? ` · ${s.distanceKm} km` : ''}</div>
@@ -1206,7 +1221,7 @@ function renderBoard(){
         ${s.prix ? `<span class="prix-badge">💶 ${s.prix}</span>` : ''}
       </div>
     </div>
-  `).join('');
+  `;}).join('');
   board.querySelectorAll('.flyer').forEach(el=>{
     el.onclick = ()=>{
       const s = spots.find(x=>x.id===el.dataset.id);
