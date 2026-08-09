@@ -76,15 +76,17 @@
   }
   .zone-filter-bar{
     flex:0 0 auto; background:var(--ochre); color:#fff8ec;
-    padding:10px 20px; display:flex; justify-content:space-between; align-items:center;
+    padding:10px 20px; display:flex; justify-content:flex-start; align-items:center; gap:8px; flex-wrap:wrap;
     font-family:'Space Mono',monospace; font-size:13px;
   }
   .zone-filter-bar strong{font-family:'Big Shoulders Display',sans-serif; font-size:16px; letter-spacing:0.3px;}
   .zone-filter-bar button{
     background:#00000030; color:#fff8ec; border:1px solid #ffffff50; border-radius:20px;
     padding:6px 14px; font-family:'Space Mono',monospace; font-size:12px; cursor:pointer;
+    white-space:nowrap; transition:background .15s ease;
   }
   .zone-filter-bar button:hover{background:#00000050;}
+  .zone-filter-bar button.active{background:#00000060; border-color:#ffffffb0;}
   .flyer-commune-tag, .scroll-commune-tag{cursor:pointer;}
   .flyer-commune-tag:hover{text-decoration:underline;}
   .scroll-commune-tag:hover{filter:brightness(1.1);}
@@ -289,8 +291,6 @@
     .filters select{padding:6px 8px; font-size:12px;}
     .sort-toggle{margin-left:0; width:100%;}
     .mode-toggle{gap:5px;}
-    .admin-toolbar{display:none;}
-    .admin-toolbar.open{display:flex; width:100%; justify-content:flex-end; margin-top:6px; padding-top:6px; border-top:1px dashed #ffffff30;}
     #adminMenuToggle, #adminLoginBtn{padding:5px 9px; font-size:13px;}
     .board{padding:0 14px 90px; margin:22px auto; grid-template-columns:1fr; gap:24px;}
     .flyer:nth-child(n){transform:rotate(0deg);}
@@ -318,8 +318,9 @@
   }
   .config-warning code{background:#00000040; padding:1px 5px; border-radius:2px;}
 
-  #adminZone{display:flex; align-items:center; gap:6px; flex-wrap:wrap;}
-  .admin-toolbar{display:flex; align-items:center; gap:6px; flex-wrap:wrap;}
+  #adminZone{display:inline-flex; align-items:center; gap:6px; flex-wrap:wrap; vertical-align:middle; margin-left:10px; font-family:'Space Mono',monospace; text-transform:none; letter-spacing:0; font-weight:400; font-size:13px; position:relative;}
+  .admin-toolbar{display:none; position:absolute; top:calc(100% + 8px); left:0; flex-direction:column; align-items:stretch; gap:6px; background:#241a10; border:1px solid #4a3a24; border-radius:6px; padding:10px; box-shadow:0 8px 18px #00000060; z-index:80; min-width:180px;}
+  .admin-toolbar.open{display:flex;}
   .login-form{display:flex; flex-direction:column; gap:8px;}
 </style>
 </head>
@@ -328,11 +329,8 @@
   <div class="topbar">
     <div class="brand-row">
       <div>
-        <div class="brand"><span class="dot"></span>Les Pépites du Coin</div>
+        <div class="brand"><span class="dot"></span>Les Pépites du Coin<span id="adminZone"></span></div>
         <div class="tagline">spots &amp; bons plans à voir et à faire autour de Velaux</div>
-      </div>
-      <div class="mode-toggle">
-        <div id="adminZone"></div>
       </div>
     </div>
     <div class="filters" id="filters"></div>
@@ -741,31 +739,19 @@ function renderFilters(){
   CATS.forEach(c=>{
     html += `<button class="pill ${activeCat===c?'active':''}" data-cat="${c}">${CAT_EMOJI[c]} ${CAT_LABEL[c]}</button>`;
   });
-  html += `<select id="communeSelect">
-    <option value="Toutes">Toutes les communes</option>
-    ${communeList().map(v=>`<option value="${v}" ${activeCommune===v?'selected':''}>${v}</option>`).join('')}
-  </select>`;
-  html += `<div class="sort-toggle">
-    <button class="pill ${sortMode==='distance'?'active':''}" data-sort="distance">📍 Distance</button>
-    <button class="pill ${sortMode==='alpha'?'active':''}" data-sort="alpha">🔤 A-Z</button>
-  </div>`;
   el.innerHTML = html;
 
   el.querySelectorAll('[data-cat]').forEach(btn=>{
     btn.onclick = ()=>{ activeCat = btn.dataset.cat; render(); };
   });
-  el.querySelectorAll('[data-sort]').forEach(btn=>{
-    btn.onclick = ()=>{ sortMode = btn.dataset.sort; render(); };
-  });
-  document.getElementById('communeSelect').onchange = (e)=>{ activeCommune = e.target.value; render(); };
 }
 
 function renderZoneFilterBar(){
   const bar = document.getElementById('zoneFilterBar');
   bar.style.display = 'flex';
   bar.innerHTML = ZONES.map(z=>`
-    <button class="pill zone-pill ${activeZone===z?'active':''}" data-zone="${z}" style="background:${activeZone===z?'#00000030':'transparent'}; border:1px solid #ffffff70; color:#fff8ec;">${ZONE_EMOJI[z]} ${ZONE_LABEL[z]}</button>
-  `).join('') + `<button class="pill" data-zone="Toutes" style="background:${activeZone==='Toutes'?'#00000030':'transparent'}; border:1px solid #ffffff70; color:#fff8ec;">Toutes zones</button>`;
+    <button class="pill ${activeZone===z?'active':''}" data-zone="${z}">${ZONE_EMOJI[z]} ${ZONE_LABEL[z]}</button>
+  `).join('') + `<button class="pill ${activeZone==='Toutes'?'active':''}" data-zone="Toutes">Toutes les zones</button>`;
   bar.querySelectorAll('[data-zone]').forEach(btn=>{
     btn.onclick = ()=>{ activeZone = btn.dataset.zone; render(); };
   });
@@ -780,8 +766,8 @@ function renderEauFilterBar(){
   }
   bar.style.display = 'flex';
   bar.innerHTML = EAU_TYPES.map(e=>`
-    <button class="pill eau-pill ${activeEau===e?'active':''}" data-eau="${e}" style="background:${activeEau===e?'#00000030':'transparent'}; border:1px solid #ffffff70; color:#fff8ec;">${EAU_EMOJI[e]} ${EAU_LABEL[e]}</button>
-  `).join('') + `<button class="pill" data-eau="Toutes" style="background:${activeEau==='Toutes'?'#00000030':'transparent'}; border:1px solid #ffffff70; color:#fff8ec;">Toutes les eaux</button>`;
+    <button class="pill ${activeEau===e?'active':''}" data-eau="${e}">${EAU_EMOJI[e]} ${EAU_LABEL[e]}</button>
+  `).join('') + `<button class="pill ${activeEau==='Toutes'?'active':''}" data-eau="Toutes">Toutes les eaux</button>`;
   bar.querySelectorAll('[data-eau]').forEach(btn=>{
     btn.onclick = ()=>{ activeEau = btn.dataset.eau; render(); };
   });
