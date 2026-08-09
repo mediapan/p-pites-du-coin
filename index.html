@@ -336,6 +336,7 @@
     <div class="filters" id="filters"></div>
   </div>
   <div class="zone-filter-bar" id="zoneFilterBar" style="display:none;"></div>
+  <div class="zone-filter-bar" id="eauFilterBar" style="display:none; background:var(--azure);"></div>
   <div class="content" id="content">
     <div class="board" id="board"></div>
   </div>
@@ -380,6 +381,10 @@ const ZONES = ["proche","moyen","pepite"];
 const ZONE_LABEL = {proche:"À côté (0–20 km)", moyen:"Dans le coin (20–35 km)", pepite:"Vaut le détour (35 km+)"};
 const ZONE_EMOJI = {proche:"🏠", moyen:"🚗", pepite:"💎"};
 
+const EAU_TYPES = ["mer","etang","riviere"];
+const EAU_LABEL = {mer:"Mer", etang:"Étang de Berre", riviere:"Rivière"};
+const EAU_EMOJI = {mer:"🌊", etang:"🏞️", riviere:"💦"};
+
 function demoImg(bg, label){
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='400' height='700'><rect width='100%' height='100%' fill='${bg}'/><text x='50%' y='50%' font-family='sans-serif' font-size='30' fill='white' text-anchor='middle' dominant-baseline='middle'>${label}</text></svg>`;
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
@@ -417,18 +422,21 @@ const DEMO_SPOTS = [
 
   // --- PLAGES & BAIGNADE ---
   {titre:"Plage de la Corniche", cats:["Plages"], commune:"Sausset-les-Pins", zone:"moyen", distanceKm:22,
+   eau:"mer",
    image:null,
    adresse:"Promenade de la Corniche, 13960 Sausset-les-Pins",
    desc:"Plage principale de Sausset-les-Pins, en plein centre, mélange de sable et de galets.",
    tip:"Accessible à pied depuis le village. Très fréquentée en été, prévoir d'arriver tôt pour se garer.",
    prix:"Gratuit", niveau:"Familial, baignade non surveillée hors saison", lien:null},
   {titre:"Plage des Baumettes", cats:["Plages"], commune:"Sausset-les-Pins", zone:"moyen", distanceKm:23,
+   eau:"mer",
    image:null,
    adresse:null,
    desc:"Grande plage de sable et petits galets à la limite de Carry-le-Rouet, appréciée des familles.",
    tip:"Parking gratuit mais rare en été. Accès adapté aux personnes à mobilité réduite.",
    prix:"Gratuit", niveau:"Familial", lien:null},
   {titre:"Plage du Rouet", cats:["Plages"], commune:"Carry-le-Rouet", zone:"moyen", distanceKm:24,
+   eau:"mer",
    adresse:null,
    desc:"L'une des plus grandes plages de la Côte Bleue, alternance de galets et de sable, eau turquoise.",
    tip:"De nombreuses activités nautiques sur place : paddle, kayak, voile légère.",
@@ -439,73 +447,87 @@ const DEMO_SPOTS = [
    tip:"Idéale par mistral car bien protégée. Douches publiques et parking gratuit à proximité.",
    prix:"Gratuit", niveau:"Facile", lien:null},
   {titre:"Plage de Couronne-Vieille", cats:["Plages"], commune:"Martigues", zone:"moyen", distanceKm:27,
+   eau:"mer",
    adresse:"Quartier de La Couronne, 13500 Martigues",
    desc:"Plage pittoresque dominée par une chapelle, bordée de pins offrant de l'ombre, eaux limpides.",
    tip:"Surveillée en saison. Traversée par le sentier du littoral, jolie balade possible avant ou après la baignade.",
    prix:"Gratuit", niveau:"Familial", lien:null},
   {titre:"Plage Sainte-Croix", cats:["Plages"], commune:"Martigues", zone:"moyen", distanceKm:26,
+   eau:"mer",
    adresse:"Quartier de La Couronne, 13500 Martigues",
    desc:"Petite plage de sable et galets nichée dans une anse abritée, à deux pas de Couronne-Vieille.",
    tip:"Moins fréquentée que ses voisines, bon plan pour éviter la foule en pleine saison.",
    prix:"Gratuit", niveau:"Familial", lien:null},
   {titre:"Plage des Catalans — musée subaquatique", cats:["Plages","Sport"], commune:"Marseille", zone:"moyen", distanceKm:32,
+   eau:"mer",
    image:"https://commons.wikimedia.org/wiki/Special:FilePath/Marseille%2C%20la%20plage%20des%20Catalans%20%2813169643263%29.jpg?width=800",
    adresse:"Anse des Catalans, 13007 Marseille",
    desc:"Plage de sable en plein Marseille, avec au large 10 statues immergées à 5m de profondeur, visibles en apnée ou snorkeling.",
    tip:"Nager environ 100m au large pour rejoindre les statues (masque-tuba suffit). Parking très difficile l'été, viser tôt le matin ou y aller à pied/vélo.",
    prix:"Gratuit", niveau:"Bon niveau de nage requis pour les statues", lien:"https://www.musee-subaquatique.com/fr/"},
   {titre:"Plage du Passet", cats:["Plages"], commune:"Berre-l'Étang", zone:"proche", distanceKm:8,
+   eau:"etang",
    adresse:null,
    desc:"Plage de sable au bord de l'étang de Berre, dans un cadre plus sauvage que ses voisines.",
    tip:"Eau calme sans vagues, pratique avec de jeunes enfants. Peu d'ombre, prévoir un parasol.",
    prix:"Gratuit", niveau:"Familial", lien:null},
   {titre:"Plage de Champigny", cats:["Plages"], commune:"Berre-l'Étang", zone:"proche", distanceKm:8,
+   eau:"etang",
    adresse:null,
    desc:"Plage de sable fin bordée de palmiers, eau de baignade classée Pavillon Bleu et accessible aux personnes à mobilité réduite (Handiplage).",
    tip:"Grand parking gratuit. La guinguette « Les Merveilles » juste à côté pour un verre ou une glace après la baignade.",
    prix:"Gratuit", niveau:"Familial, accès PMR", lien:null},
   {titre:"Plage du Ranquet", cats:["Plages"], commune:"Istres", zone:"moyen", distanceKm:24,
+   eau:"etang",
    image:"https://commons.wikimedia.org/wiki/Special:FilePath/Plage%20de%20la%20Romaniquette.jpg?width=800",
    adresse:null,
    desc:"Plage aménagée et surveillée en saison au bord de l'étang de Berre, ambiance familiale avec bar-pizzeria sur place.",
    tip:"Surveillée mi-juin à début septembre. Bien équipée, un peu plus animée que les plages voisines.",
    prix:"Gratuit", niveau:"Familial", lien:null},
   {titre:"Plage des Robinsons", cats:["Plages"], commune:"Rognac", zone:"proche", distanceKm:6,
+   eau:"etang",
    adresse:"Près de la base nautique, 13340 Rognac",
    desc:"Petite plage discrète au bord de l'étang de Berre, la plus proche de Velaux, près de la base nautique.",
    tip:"Non surveillée et peu fréquentée — parfait pour une baignade tranquille en semaine. Eau suivie régulièrement, bons résultats en général.",
    prix:"Gratuit", niveau:"Familial", lien:null},
   {titre:"Plage des Cabassons", cats:["Plages"], commune:"Saint-Chamas", zone:"proche", distanceKm:10,
+   eau:"etang",
    adresse:null,
    desc:"Plage nichée entre le port de pêche et le port de plaisance de Saint-Chamas, vue sur les collines du Baou.",
    tip:"Sable fin et eau claire, cadre plus authentique que les grandes plages. Pavillon Bleu.",
    prix:"Gratuit", niveau:"Familial", lien:null},
   {titre:"Plage des Marettes et de l'Agneau", cats:["Plages"], commune:"Vitrolles", zone:"proche", distanceKm:13,
+   eau:"etang",
    adresse:"Quartier des Vignettes, 13127 Vitrolles",
    desc:"Grande plage de sable aménagée, ponton en bois avec transats, bordée de tamaris, très prisée l'été.",
    tip:"Surveillée mi-juin à fin août. Animations « Lire et jouer à la plage » et soirées estivales en août.",
    prix:"Gratuit", niveau:"Familial", lien:null},
   {titre:"Plage du Jaï", cats:["Plages"], commune:"Marignane", zone:"proche", distanceKm:17,
+   eau:"etang",
    adresse:null,
    desc:"Longue plage de 600m de sable et pelouse au bord de l'étang de Berre, avec un espace ludique pour les enfants.",
    tip:"Surveillée du 1er juillet au 31 août, 10h30-18h. Bien équipée pour passer la journée en famille.",
    prix:"Gratuit", niveau:"Familial", lien:null},
   {titre:"Plage de Figuerolles", cats:["Plages"], commune:"Martigues", zone:"moyen", distanceKm:25,
+   eau:"etang",
    adresse:null,
    desc:"L'une des plus belles plages de l'étang de Berre selon les habitués, au bord du grand parc de Figuerolles.",
    tip:"Combinable avec la visite de la ferme pédagogique et le sentier du patrimoine agricole du parc juste à côté.",
    prix:"Gratuit", niveau:"Familial", lien:null},
   {titre:"Plage du centre-ville — bord de l'étang de Berre", cats:["Plages"], commune:"Martigues", zone:"moyen", distanceKm:25,
+   eau:"etang",
    adresse:null,
    desc:"Plage de sable en plein centre de Martigues, certifiée eaux de baignade, sans vagues ni courant.",
    tip:"Pratique pour combiner baignade et balade dans le quartier de l'Île le même après-midi.",
    prix:"Gratuit", niveau:"Familial, eau calme", lien:null},
   {titre:"Plage municipale d'Istres", cats:["Plages"], commune:"Istres", zone:"moyen", distanceKm:24,
+   eau:"etang",
    adresse:null,
    desc:"Plage aménagée au bord de l'étang de l'Olivier, eau calme sans marée ni vagues, idéale petits enfants.",
    tip:"Base nautique attenante pour louer paddle et canoë. Aire de jeux et snacks à proximité.",
    prix:"Gratuit", niveau:"Familial, dès le plus jeune âge", lien:null},
   {titre:"Plages des Saintes-Maries-de-la-Mer", cats:["Plages","Nature"], commune:"Saintes-Maries-de-la-Mer", zone:"pepite", distanceKm:70,
+   eau:"mer",
    adresse:null,
    desc:"Immenses plages de sable sauvage à perte de vue, entre mer et marais, au cœur de la Camargue.",
    tip:"Peu ou pas d'ombre, prévoir crème solaire et parasol. Certaines portions sont naturistes, se renseigner sur place.",
@@ -533,12 +555,14 @@ const DEMO_SPOTS = [
    tip:"Réseau de sentiers balisés. Accès parfois restreint l'été en cas de risque incendie élevé — vérifier avant de partir.",
    prix:"Gratuit", niveau:"Facile à moyen", lien:null},
   {titre:"Aqueduc de Roquefavour & bord de l'Arc", cats:["Nature","Patrimoine"], commune:"Ventabren", zone:"proche", distanceKm:12,
+   eau:"riviere",
    image:"https://commons.wikimedia.org/wiki/Special:FilePath/Aqueduc%20de%20Roquefavour%202.jpg?width=800",
    adresse:"Le Moulin du Pont, 13122 Ventabren",
    desc:"Le plus grand aqueduc en pierre de maçonnerie d'Europe, avec possibilité de baignade dans l'Arc en contrebas.",
    tip:"Parking gratuit au rond-point du Moulin du Pont. Baignade sauvage à ses risques, site très fréquenté l'été.",
    prix:"Gratuit", niveau:"Familial", lien:null},
   {titre:"Calanque de Niolon", cats:["Nature","Plages"], commune:"Le Rove", zone:"proche", distanceKm:20,
+   eau:"mer",
    adresse:null,
    desc:"Petite crique à l'eau turquoise nichée près d'un port de pêche, moins connue que les grandes calanques.",
    tip:"Accès à pied depuis le petit port. Arriver tôt en été pour trouver une place à l'ombre.",
@@ -722,6 +746,7 @@ let dataLoaded = false;
 let activeCat = "Toutes";
 let activeZone = "Toutes";
 let activeCommune = "Toutes";
+let activeEau = "Toutes";
 let sortMode = "distance";
 let viewMode = "board";
 let onlyFree = false;
@@ -783,6 +808,7 @@ function getFilteredList(){
     (activeCat==='Toutes' || (s.cats||[]).includes(activeCat)) &&
     (activeZone==='Toutes' || s.zone===activeZone) &&
     (activeCommune==='Toutes' || s.commune===activeCommune) &&
+    (activeEau==='Toutes' || s.eau===activeEau) &&
     (!onlyFree || (s.prix||'').toLowerCase().startsWith('gratuit'))
   );
   if(sortMode==='distance'){
@@ -834,6 +860,22 @@ function renderZoneFilterBar(){
   `).join('') + `<button class="pill" data-zone="Toutes" style="background:${activeZone==='Toutes'?'#00000030':'transparent'}; border:1px solid #ffffff70; color:#fff8ec;">Toutes zones</button>`;
   bar.querySelectorAll('[data-zone]').forEach(btn=>{
     btn.onclick = ()=>{ activeZone = btn.dataset.zone; render(); };
+  });
+}
+
+function renderEauFilterBar(){
+  const bar = document.getElementById('eauFilterBar');
+  if(activeCat !== 'Plages'){
+    bar.style.display = 'none';
+    if(activeEau !== 'Toutes'){ activeEau = 'Toutes'; }
+    return;
+  }
+  bar.style.display = 'flex';
+  bar.innerHTML = EAU_TYPES.map(e=>`
+    <button class="pill eau-pill ${activeEau===e?'active':''}" data-eau="${e}" style="background:${activeEau===e?'#00000030':'transparent'}; border:1px solid #ffffff70; color:#fff8ec;">${EAU_EMOJI[e]} ${EAU_LABEL[e]}</button>
+  `).join('') + `<button class="pill" data-eau="Toutes" style="background:${activeEau==='Toutes'?'#00000030':'transparent'}; border:1px solid #ffffff70; color:#fff8ec;">Toutes les eaux</button>`;
+  bar.querySelectorAll('[data-eau]').forEach(btn=>{
+    btn.onclick = ()=>{ activeEau = btn.dataset.eau; render(); };
   });
 }
 
@@ -988,6 +1030,7 @@ function toExportFormat(){
     cats: s.cats || [],
     commune: s.commune,
     zone: s.zone,
+    eau: s.eau || null,
     distanceKm: s.distanceKm || null,
     adresse: s.adresse || null,
     desc: s.desc,
@@ -1097,6 +1140,13 @@ function openPublishForm(editing){
       <select id="f-zone">
         ${ZONES.map(z=>`<option value="${z}" ${isEdit && editing.zone===z ? 'selected' : ''}>${ZONE_LABEL[z]}</option>`).join('')}
       </select>
+      <div id="f-eau-wrap" style="display:none;">
+        <label>Type d'eau</label>
+        <select id="f-eau">
+          <option value="">— non applicable —</option>
+          ${EAU_TYPES.map(e=>`<option value="${e}" ${isEdit && editing.eau===e ? 'selected' : ''}>${EAU_EMOJI[e]} ${EAU_LABEL[e]}</option>`).join('')}
+        </select>
+      </div>
       <label>Distance approx. depuis Velaux (km)</label>
       <input type="number" id="f-distance" value="${isEdit && editing.distanceKm!=null ? editing.distanceKm : ''}">
       <label>Adresse (optionnelle)</label>
@@ -1137,6 +1187,16 @@ function openPublishForm(editing){
   document.querySelectorAll('.f-cat-checkbox').forEach(cb=>{ cb.onchange = refreshPreview; });
   document.getElementById('f-image-preview-wrap').onclick = ()=>{ imgInput.focus(); imgInput.select(); };
 
+  function refreshEauVisibility(){
+    const isPlages = !!document.querySelector('.f-cat-checkbox[value="Plages"]:checked');
+    document.getElementById('f-eau-wrap').style.display = isPlages ? 'block' : 'none';
+  }
+  refreshEauVisibility();
+  document.querySelectorAll('.f-cat-checkbox').forEach(cb=>{
+    const prevOnChange = cb.onchange;
+    cb.onchange = (e)=>{ if(prevOnChange) prevOnChange(e); refreshEauVisibility(); };
+  });
+
   document.getElementById('f-submit').onclick = async ()=>{
     const titre = document.getElementById('f-titre').value.trim();
     if(!titre){ document.getElementById('f-titre').focus(); return; }
@@ -1154,6 +1214,7 @@ function openPublishForm(editing){
       cats,
       commune,
       zone: document.getElementById('f-zone').value,
+      eau: document.getElementById('f-eau').value || null,
       distanceKm: distanceVal ? parseFloat(distanceVal) : null,
       adresse: document.getElementById('f-adresse').value.trim() || null,
       desc: document.getElementById('f-desc').value || "Pas de description.",
@@ -1194,7 +1255,7 @@ function openDetail(s){
       <h2>${s.titre}</h2>
       <div class="detail-meta">
         📍 ${s.commune}${s.distanceKm!=null ? ` · ${s.distanceKm} km de Velaux` : ''}<br>
-        ${ZONE_EMOJI[s.zone]||''} ${ZONE_LABEL[s.zone]||''}${s.niveau ? ` · ${s.niveau}` : ''}
+        ${ZONE_EMOJI[s.zone]||''} ${ZONE_LABEL[s.zone]||''}${s.niveau ? ` · ${s.niveau}` : ''}${s.eau ? ` · ${EAU_EMOJI[s.eau]} ${EAU_LABEL[s.eau]}` : ''}
       </div>
       ${s.adresse ? `<div class="detail-address">📌 ${s.adresse}</div>` : ''}
       <div class="detail-desc">${s.desc||''}</div>
@@ -1243,6 +1304,7 @@ function renderBoard(){
       <div class="desc">${s.desc||''}</div>
       <div class="flyer-foot">
         <span class="zone-badge zone-${s.zone}">${ZONE_EMOJI[s.zone]||''} ${ZONE_LABEL[s.zone]||''}</span>
+        ${s.eau ? `<span class="prix-badge">${EAU_EMOJI[s.eau]} ${EAU_LABEL[s.eau]}</span>` : ''}
         ${s.prix ? `<span class="prix-badge">💶 ${s.prix}</span>` : ''}
       </div>
     </div>
@@ -1263,6 +1325,7 @@ function render(){
   renderAdminBadge();
   renderFilters();
   renderZoneFilterBar();
+  renderEauFilterBar();
   renderBoard();
 }
 render();
