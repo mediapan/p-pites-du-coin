@@ -332,7 +332,6 @@
         <div class="tagline">spots &amp; bons plans à voir et à faire autour de Velaux</div>
       </div>
       <div class="mode-toggle">
-        <button class="pill" id="freeToggle">🆓 Gratuit</button>
         <div id="adminZone"></div>
       </div>
     </div>
@@ -663,7 +662,6 @@ let activeCommune = "Toutes";
 let activeEau = "Toutes";
 let sortMode = "distance";
 let viewMode = "board";
-let onlyFree = false;
 let adminMenuOpen = false;
 
 function showConfigWarning(msg){
@@ -723,8 +721,7 @@ function getFilteredList(){
     (activeCat==='Toutes' || (s.cats||[]).includes(activeCat)) &&
     (activeZone==='Toutes' || s.zone===activeZone) &&
     (activeCommune==='Toutes' || s.commune===activeCommune) &&
-    (activeEau==='Toutes' || s.eau===activeEau) &&
-    (!onlyFree || (s.prix||'').toLowerCase().startsWith('gratuit'))
+    (activeEau==='Toutes' || s.eau===activeEau)
   );
   if(sortMode==='distance'){
     list = list.slice().sort((a,b)=> (a.distanceKm||0) - (b.distanceKm||0));
@@ -736,10 +733,6 @@ function getFilteredList(){
 
 function communeList(){
   return [...new Set(spots.map(s=>s.commune).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
-}
-
-function renderModeToggle(){
-  document.getElementById('freeToggle').classList.toggle('active', onlyFree);
 }
 
 function renderFilters(){
@@ -1251,10 +1244,8 @@ function renderBoard(){
 }
 
 document.getElementById('openPublish').onclick = ()=> openPublishForm();
-document.getElementById('freeToggle').onclick = ()=>{ onlyFree = !onlyFree; render(); };
 
 function render(){
-  renderModeToggle();
   renderAdminBadge();
   renderFilters();
   renderZoneFilterBar();
