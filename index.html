@@ -347,7 +347,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import {
-  getFirestore, collection, addDoc, doc, setDoc, updateDoc, deleteDoc, onSnapshot,
+  getFirestore, collection, addDoc, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot,
   query, orderBy, serverTimestamp, getDocs, increment
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 import {
@@ -872,11 +872,13 @@ function renderAdminBadge(){
   if(!el) return;
   if(isAdmin){
     el.innerHTML = `
+      <button class="pill" id="statsBtn">📊 Stats</button>
       <button class="pill" id="bulkBtn">📥 Import</button>
       <button class="pill" id="exportBtn">📤 Export</button>
       <button class="pill" id="deleteAllBtn" style="background:var(--pin); border-color:var(--pin); color:#fff8ec;">🗑️ Tout supprimer</button>
       <button class="pill" id="logoutBtn">Déconnexion</button>
     `;
+    document.getElementById('statsBtn').onclick = openStatsPanel;
     document.getElementById('bulkBtn').onclick = openBulkImport;
     document.getElementById('exportBtn').onclick = exportJson;
     document.getElementById('deleteAllBtn').onclick = openDeleteAllConfirm;
@@ -886,6 +888,52 @@ function renderAdminBadge(){
   } else {
     el.innerHTML = `<button class="pill" id="adminLoginBtn">🔑 Admin</button>`;
     document.getElementById('adminLoginBtn').onclick = openLoginForm;
+  }
+}
+
+async function openStatsPanel(){
+  document.getElementById('modalRoot').innerHTML = `
+  <div class="overlay" id="overlay">
+    <div class="modal">
+      <button class="close" id="closeModal">✕ fermer</button>
+      <h2>📊 Statistiques de visites</h2>
+      <div id="stats-content" style="font-family:'Space Mono',monospace; font-size:13px;">Chargement...</div>
+    </div>
+  </div>`;
+  document.getElementById('overlay').onclick = (e)=>{ if(e.target.id==='overlay') closeModal(); };
+  document.getElementById('closeModal').onclick = closeModal;
+
+  try{
+    const totalSnap = await getDoc(doc(db,'visites_total','global'));
+    const total = totalSnap.exists() ? (totalSnap.data().count || 0) : 0;
+
+    const joursSnap = await getDocs(collection(db,'visites_jour'));
+    const jours = joursSnap.docs.map(d=>({date:d.id, count:d.data().count||0}))
+      .sort((a,b)=>a.date.localeCompare(b.date))
+      .slice(-14);
+
+    const maxCount = Math.max(1, ...jours.map(j=>j.count));
+    const barsHtml = jours.map(j=>{
+      const h = Math.round((j.count/maxCount)*60) || 2;
+      const lbl = j.date.slice(5);
+      return `<div style="display:flex; flex-direction:column; align-items:center; gap:4px; flex:1; min-width:0;">
+        <div style="font-size:10px;">${j.count}</div>
+        <div style="width:100%; max-width:22px; height:${h}px; background:var(--cyprus); border-radius:2px 2px 0 0;"></div>
+        <div style="font-size:9px; color:var(--ink-soft); white-space:nowrap;">${lbl}</div>
+      </div>`;
+    }).join('');
+
+    document.getElementById('stats-content').innerHTML = `
+      <div style="font-size:32px; font-family:'Big Shoulders Display',sans-serif; font-weight:900; margin-bottom:2px;">${total}</div>
+      <div style="color:var(--ink-soft); margin-bottom:18px;">visites au total</div>
+      ${jours.length ? `
+        <div style="display:flex; align-items:flex-end; gap:6px; height:100px; border-bottom:1px solid #00000020; padding-bottom:2px;">${barsHtml}</div>
+        <div style="margin-top:8px; color:var(--ink-soft); font-size:11px;">${jours.length} derniers jour(s) avec données</div>
+      ` : `<div style="color:var(--ink-soft);">Pas encore de données journalières.</div>`}
+    `;
+  }catch(err){
+    console.error(err);
+    document.getElementById('stats-content').innerHTML = "❌ Erreur : " + err.message;
   }
 }
 
