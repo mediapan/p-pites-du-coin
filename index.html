@@ -76,17 +76,15 @@
   }
   .zone-filter-bar{
     flex:0 0 auto; background:var(--ochre); color:#fff8ec;
-    padding:10px 20px; display:flex; justify-content:flex-start; align-items:center; gap:8px; flex-wrap:wrap;
+    padding:10px 20px; display:flex; justify-content:space-between; align-items:center;
     font-family:'Space Mono',monospace; font-size:13px;
   }
   .zone-filter-bar strong{font-family:'Big Shoulders Display',sans-serif; font-size:16px; letter-spacing:0.3px;}
   .zone-filter-bar button{
     background:#00000030; color:#fff8ec; border:1px solid #ffffff50; border-radius:20px;
     padding:6px 14px; font-family:'Space Mono',monospace; font-size:12px; cursor:pointer;
-    white-space:nowrap; transition:background .15s ease;
   }
   .zone-filter-bar button:hover{background:#00000050;}
-  .zone-filter-bar button.active{background:#00000060; border-color:#ffffffb0;}
   .flyer-commune-tag, .scroll-commune-tag{cursor:pointer;}
   .flyer-commune-tag:hover{text-decoration:underline;}
   .scroll-commune-tag:hover{filter:brightness(1.1);}
@@ -136,10 +134,11 @@
     font-family:'Big Shoulders Display',sans-serif; font-weight:700; font-size:13px;
     color:var(--ochre); white-space:nowrap;
   }
-  .cat-Kids{background:var(--ochre);}
+  .cat-Nature{background:var(--cyprus);}
+  .cat-Enfants{background:var(--ochre);}
+  .cat-Patrimoine{background:#8a6b3f;}
+  .cat-Sport{background:var(--lavender);}
   .cat-Plages{background:var(--azure);}
-  .cat-Amis{background:#a3345c;}
-  .cat-Decouverte{background:#8a6b3f;}
 
   .flyer h3{
     font-family:'Big Shoulders Display', sans-serif;
@@ -283,15 +282,13 @@
   @keyframes bob{0%,100%{transform:translate(-50%,0);}50%{transform:translate(-50%,-6px);}}
 
   @media (max-width: 640px){
-    .topbar{padding:12px 14px 10px;}
-    .brand{font-size:22px;}
-    .tagline{font-size:10px; opacity:0.75;}
+    .topbar{padding:14px 14px 12px;}
+    .brand{font-size:24px;}
+    .tagline{font-size:10.5px;}
     .filters{gap:7px;}
     .pill{padding:5px 10px; font-size:11px;}
     .filters select{padding:6px 8px; font-size:12px;}
     .sort-toggle{margin-left:0; width:100%;}
-    .mode-toggle{gap:5px;}
-    #adminMenuToggle, #adminLoginBtn{padding:5px 9px; font-size:13px;}
     .board{padding:0 14px 90px; margin:22px auto; grid-template-columns:1fr; gap:24px;}
     .flyer:nth-child(n){transform:rotate(0deg);}
     .flyer:hover{transform:translateY(-2px);}
@@ -318,9 +315,7 @@
   }
   .config-warning code{background:#00000040; padding:1px 5px; border-radius:2px;}
 
-  #adminZone{display:inline-flex; align-items:center; gap:6px; flex-wrap:wrap; vertical-align:middle; margin-left:10px; font-family:'Space Mono',monospace; text-transform:none; letter-spacing:0; font-weight:400; font-size:13px; position:relative;}
-  .admin-toolbar{display:none; position:absolute; top:calc(100% + 8px); left:0; flex-direction:column; align-items:stretch; gap:6px; background:#241a10; border:1px solid #4a3a24; border-radius:6px; padding:10px; box-shadow:0 8px 18px #00000060; z-index:80; min-width:180px;}
-  .admin-toolbar.open{display:flex;}
+  #adminZone{display:flex; align-items:center; gap:6px; flex-wrap:wrap;}
   .login-form{display:flex; flex-direction:column; gap:8px;}
 </style>
 </head>
@@ -329,14 +324,17 @@
   <div class="topbar">
     <div class="brand-row">
       <div>
-        <div class="brand"><span class="dot"></span>Les Pépites du Coin<span id="adminZone"></span></div>
+        <div class="brand"><span class="dot"></span>Les Pépites du Coin</div>
         <div class="tagline">spots &amp; bons plans à voir et à faire autour de Velaux</div>
+      </div>
+      <div class="mode-toggle">
+        <button class="pill" id="freeToggle">🆓 Gratuit</button>
+        <div id="adminZone"></div>
       </div>
     </div>
     <div class="filters" id="filters"></div>
   </div>
   <div class="zone-filter-bar" id="zoneFilterBar" style="display:none;"></div>
-  <div class="zone-filter-bar" id="eauFilterBar" style="display:none; background:var(--azure);"></div>
   <div class="content" id="content">
     <div class="board" id="board"></div>
   </div>
@@ -350,7 +348,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import {
   getFirestore, collection, addDoc, doc, setDoc, updateDoc, deleteDoc, onSnapshot,
-  query, orderBy, serverTimestamp, getDocs
+  query, orderBy, serverTimestamp, getDocs, increment
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 import {
   getAuth, signInAnonymously, signInWithEmailAndPassword, signOut, onAuthStateChanged
@@ -373,17 +371,13 @@ const CONFIG_READY = firebaseConfig.apiKey !== "YOUR_API_KEY";
 // Firebase Console > Authentication > Users > copie ton UID ici.
 const ADMIN_UID = "5FMDbRE7PwgJukowGITjx3doV022";
 
-const CATS = ["Kids","Plages","Amis","Decouverte"];
-const CAT_LABEL = {Kids:"Kids", Plages:"Plages & Baignade", Amis:"Fun entre amis", Decouverte:"Découverte"};
-const CAT_EMOJI = {Kids:"🎠", Plages:"🏖️", Amis:"🥂", Decouverte:"🗺️"};
+const CATS = ["Nature","Enfants","Patrimoine","Sport","Plages"];
+const CAT_LABEL = {Nature:"Nature & Randos", Enfants:"Enfants & Familles", Patrimoine:"Patrimoine & Visites", Sport:"Loisirs & Sport", Plages:"Plages & Baignade"};
+const CAT_EMOJI = {Nature:"🥾", Enfants:"🎠", Patrimoine:"🏰", Sport:"🧗", Plages:"🏖️"};
 
 const ZONES = ["proche","moyen","pepite"];
-const ZONE_LABEL = {proche:"À côté (0–20 km)", moyen:"Dans le coin (20–35 km)", pepite:"Vaut le détour (35 km+)"};
+const ZONE_LABEL = {proche:"À côté (0–20 km)", moyen:"Dans le coin (20–35 km)", pepite:"Pépite (35 km+)"};
 const ZONE_EMOJI = {proche:"🏠", moyen:"🚗", pepite:"💎"};
-
-const EAU_TYPES = ["mer","etang","riviere"];
-const EAU_LABEL = {mer:"Mer", etang:"Étang de Berre", riviere:"Rivière"};
-const EAU_EMOJI = {mer:"🌊", etang:"🏞️", riviere:"💦"};
 
 function demoImg(bg, label){
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='400' height='700'><rect width='100%' height='100%' fill='${bg}'/><text x='50%' y='50%' font-family='sans-serif' font-size='30' fill='white' text-anchor='middle' dominant-baseline='middle'>${label}</text></svg>`;
@@ -393,116 +387,20 @@ function demoImg(bg, label){
 // Jeu de données de démarrage : spots réels autour de Velaux, à importer une fois
 // (bouton "＋ Importer les spots de départ" visible en mode admin si la base est vide).
 const DEMO_SPOTS = [
-  // --- ENTRE AMIS (ADULTES) ---
-  {titre:"Kart'Up Vitrolles", cats:["Amis"], commune:"Vitrolles", zone:"proche", distanceKm:13,
-   adresse:null,
-   desc:"Complexe multi-loisirs : karting indoor, bowling, laser game, quiz et karaoké, le tout sous le même toit.",
-   tip:"Pratique par mauvais temps ou pour une soirée. Formules groupe et anniversaire disponibles, réservation conseillée le week-end.",
-   prix:"Payant — tarif par activité", niveau:"Adultes et ados", lien:"https://kartup-vitrolles.com"},
-  {titre:"Château Calissanne — dégustation", cats:["Amis"], commune:"Lançon-Provence", zone:"proche", distanceKm:9,
-   adresse:null,
-   desc:"Domaine viticole de 1200 hectares aux reliefs de falaises, dégustation de vins de Provence sur place.",
-   tip:"Le plus proche de Velaux. Certaines visites se font sur réservation, se renseigner avant de passer.",
-   prix:"Dégustation souvent gratuite, visites guidées payantes", niveau:"Adultes", lien:null},
-  {titre:"Escape game Mind and Run", cats:["Amis"], commune:"Aix-en-Provence", zone:"moyen", distanceKm:25,
-   adresse:null,
-   desc:"7 salles d'escape game sur 850m², idéal pour un anniversaire, un EVJF/EVG ou une soirée entre amis.",
-   tip:"Réserver en ligne à l'avance, surtout le week-end. Un espace bar est disponible sur place après la partie.",
-   prix:"Payant — env. 33€/pers", niveau:"Adultes, dès 4 joueurs conseillé", lien:null},
-  {titre:"Aquae Maltae — brasserie artisanale", cats:["Amis"], commune:"Aix-en-Provence", zone:"moyen", distanceKm:26,
-   adresse:null,
-   desc:"Visite-dégustation chez un brasseur artisanal provençal, une quinzaine de bières bio différentes selon la saison.",
-   tip:"Les visites se font généralement sur réservation, prévoir de repartir avec quelques bouteilles.",
-   prix:"Payant", niveau:"Adultes", lien:null},
-  {titre:"BowlingStar Martigues", cats:["Amis"], commune:"Martigues", zone:"moyen", distanceKm:25,
-   adresse:null,
-   desc:"16 pistes de bowling et 18 billards, ambiance conviviale pour une soirée entre amis.",
-   tip:"Pratique en cas de mauvais temps. Formules groupes pour les grandes tablées.",
-   prix:"Payant — tarif par partie", niveau:"Adultes et ados", lien:null},
-
-  // --- DÉCOUVERTE (patrimoine, artisanat, curiosités) ---
-  {titre:"Coopérative oléicole de Velaux", cats:["Decouverte"], commune:"Velaux", zone:"proche", distanceKm:0,
-   adresse:null,
-   desc:"Moulin à huile d'olive dans un cadre champêtre, boutique de produits du terroir (huile, tapenade, miel, confitures).",
-   tip:"Entrée libre, boutique ouverte toute l'année. Le plus proche de tous les spots du site — juste à côté de chez toi.",
-   prix:"Gratuit (visite boutique)", niveau:"Familial", lien:null},
-  {titre:"Vieux Velaux — château des Quatre Tours", cats:["Decouverte"], commune:"Velaux", zone:"proche", distanceKm:0,
-   adresse:"Place F. Caire, 13880 Velaux",
-   desc:"Cœur historique du village : ruelles pittoresques et panorama sur l'étang depuis le haut du village.",
-   tip:"Parcours balisé de 9,7 km « entre village et colline » au départ du cimetière Saint-Martin (flyer dispo en mairie).",
-   prix:"Gratuit", niveau:"Facile", lien:null},
-  {titre:"Village perché de Ventabren", cats:["Decouverte"], commune:"Ventabren", zone:"proche", distanceKm:12,
-   image:"https://commons.wikimedia.org/wiki/Special:FilePath/Ventabren%20village.jpg?width=800",
-   adresse:null,
-   desc:"Vestiges du château de la Reine Jeanne, ruelles perchées, vue sur toute la plaine aixoise.",
-   tip:"Se garer en bas du village et monter à pied. Très photogénique au coucher de soleil.",
-   prix:"Gratuit", niveau:"Facile", lien:null},
-  {titre:"Village perché d'Éguilles", cats:["Decouverte"], commune:"Éguilles", zone:"moyen", distanceKm:22,
-   adresse:null,
-   desc:"Façades en pierre blonde, escaliers étroits et placettes bordées d'oliviers.",
-   tip:"Marché le mercredi matin. Belle vue sur la plaine aixoise depuis l'esplanade du village.",
-   prix:"Gratuit", niveau:"Facile", lien:null},
-  {titre:"Aix-en-Provence — cours Mirabeau", cats:["Decouverte"], commune:"Aix-en-Provence", zone:"moyen", distanceKm:25,
-   image:"https://commons.wikimedia.org/wiki/Special:FilePath/2016%20Aix-en-Provence%20-%20Le%20cours%20Mirabeau.jpg?width=800",
-   adresse:null,
-   desc:"Fontaines, hôtels particuliers, ateliers de Cézanne : la grande ville d'art la plus proche de Velaux.",
-   tip:"Se garer en parking-relais. Marché provençal les mardi, jeudi et samedi matin dans le centre.",
-   prix:"Gratuit (musées payants)", niveau:"Familial", lien:null},
-  {titre:"Salon-de-Provence — château de l'Empéri", cats:["Decouverte"], commune:"Salon-de-Provence", zone:"moyen", distanceKm:20,
-   image:"https://commons.wikimedia.org/wiki/Special:FilePath/Emperi.jpg?width=800",
-   adresse:null,
-   desc:"Cité de Nostradamus et de la cavalerie, château médiéval dominant la ville.",
-   tip:"Le château offre une vue superbe sur la ville. Combiner avec une balade dans le centre piéton.",
-   prix:"Musées payants, centre libre", niveau:"Familial", lien:null},
-  {titre:"Savonnerie du Moulin à Grain", cats:["Decouverte"], commune:"Salon-de-Provence", zone:"moyen", distanceKm:20,
-   adresse:null,
-   desc:"Savonnerie artisanale installée dans une ancienne manufacture royale de 1747, en plein centre-ville.",
-   tip:"Visite gratuite, ateliers en famille dès 3 ans pour fabriquer son propre savon (sur réservation, ~15€/pers).",
-   prix:"Visite gratuite, ateliers payants", niveau:"Familial", lien:"https://www.savonneriedumoulinagrain.fr"},
-  {titre:"Château de La Barben", cats:["Decouverte"], commune:"La Barben", zone:"moyen", distanceKm:27,
-   adresse:null,
-   desc:"Château médiéval habité depuis le XIe siècle, dominant la vallée de la Touloubre.",
-   tip:"Combinable avec la visite du zoo attenant pour une journée complète.",
-   prix:"Payant", niveau:"Familial", lien:null},
-  {titre:"Les Baux-de-Provence", cats:["Decouverte"], commune:"Les Baux-de-Provence", zone:"pepite", distanceKm:45,
-   image:"https://commons.wikimedia.org/wiki/Special:FilePath/13520%20Les%20Baux-de-Provence%2C%20France%20-%20panoramio%20%282%29.jpg?width=800",
-   adresse:null,
-   desc:"Village perché classé parmi les plus beaux de France, accroché à un éperon rocheux des Alpilles.",
-   tip:"Arriver tôt pour éviter l'affluence. Les Carrières de Lumières juste en contrebas valent le détour.",
-   prix:"Village libre, château et carrières payants", niveau:"Familial", lien:null},
-  {titre:"Saint-Rémy-de-Provence & Glanum", cats:["Decouverte"], commune:"Saint-Rémy-de-Provence", zone:"pepite", distanceKm:48,
-   adresse:null,
-   desc:"Ruelles provençales, arc antique et mausolée romain aux portes de la ville.",
-   tip:"Le marché du mercredi matin est réputé dans toute la région.",
-   prix:"Ville libre, site de Glanum payant", niveau:"Familial", lien:null},
-  {titre:"Abbaye de Silvacane", cats:["Decouverte"], commune:"La Roque-d'Anthéron", zone:"pepite", distanceKm:40,
-   adresse:null,
-   desc:"Abbaye cistercienne du XIIe siècle remarquablement conservée, au bord de la Durance.",
-   tip:"À combiner avec le festival de piano au château voisin en été.",
-   prix:"Payant", niveau:"Familial", lien:null},
-  {titre:"Eygalières", cats:["Decouverte"], commune:"Eygalières", zone:"pepite", distanceKm:50,
-   adresse:null,
-   desc:"Village perché des Alpilles, chapelle Saint-Sixte et vestiges du donjon en haut du village.",
-   tip:"Marché provençal le vendredi. Bonnes tables pour prolonger la sortie.",
-   prix:"Gratuit", niveau:"Facile", lien:null},
-
   // --- PLAGES & BAIGNADE ---
   {titre:"Plage de la Corniche", cats:["Plages"], commune:"Sausset-les-Pins", zone:"moyen", distanceKm:22,
-   eau:"mer",
    image:null,
    adresse:"Promenade de la Corniche, 13960 Sausset-les-Pins",
    desc:"Plage principale de Sausset-les-Pins, en plein centre, mélange de sable et de galets.",
    tip:"Accessible à pied depuis le village. Très fréquentée en été, prévoir d'arriver tôt pour se garer.",
    prix:"Gratuit", niveau:"Familial, baignade non surveillée hors saison", lien:null},
   {titre:"Plage des Baumettes", cats:["Plages"], commune:"Sausset-les-Pins", zone:"moyen", distanceKm:23,
-   eau:"mer",
    image:null,
    adresse:null,
    desc:"Grande plage de sable et petits galets à la limite de Carry-le-Rouet, appréciée des familles.",
    tip:"Parking gratuit mais rare en été. Accès adapté aux personnes à mobilité réduite.",
    prix:"Gratuit", niveau:"Familial", lien:null},
   {titre:"Plage du Rouet", cats:["Plages"], commune:"Carry-le-Rouet", zone:"moyen", distanceKm:24,
-   eau:"mer",
    adresse:null,
    desc:"L'une des plus grandes plages de la Côte Bleue, alternance de galets et de sable, eau turquoise.",
    tip:"De nombreuses activités nautiques sur place : paddle, kayak, voile légère.",
@@ -513,172 +411,270 @@ const DEMO_SPOTS = [
    tip:"Idéale par mistral car bien protégée. Douches publiques et parking gratuit à proximité.",
    prix:"Gratuit", niveau:"Facile", lien:null},
   {titre:"Plage de Couronne-Vieille", cats:["Plages"], commune:"Martigues", zone:"moyen", distanceKm:27,
-   eau:"mer",
    adresse:"Quartier de La Couronne, 13500 Martigues",
    desc:"Plage pittoresque dominée par une chapelle, bordée de pins offrant de l'ombre, eaux limpides.",
    tip:"Surveillée en saison. Traversée par le sentier du littoral, jolie balade possible avant ou après la baignade.",
    prix:"Gratuit", niveau:"Familial", lien:null},
   {titre:"Plage Sainte-Croix", cats:["Plages"], commune:"Martigues", zone:"moyen", distanceKm:26,
-   eau:"mer",
    adresse:"Quartier de La Couronne, 13500 Martigues",
    desc:"Petite plage de sable et galets nichée dans une anse abritée, à deux pas de Couronne-Vieille.",
    tip:"Moins fréquentée que ses voisines, bon plan pour éviter la foule en pleine saison.",
    prix:"Gratuit", niveau:"Familial", lien:null},
-  {titre:"Plage des Catalans — musée subaquatique", cats:["Plages"], commune:"Marseille", zone:"moyen", distanceKm:32,
-   eau:"mer",
+  {titre:"Plage des Catalans — musée subaquatique", cats:["Plages","Sport"], commune:"Marseille", zone:"moyen", distanceKm:32,
    image:"https://commons.wikimedia.org/wiki/Special:FilePath/Marseille%2C%20la%20plage%20des%20Catalans%20%2813169643263%29.jpg?width=800",
    adresse:"Anse des Catalans, 13007 Marseille",
    desc:"Plage de sable en plein Marseille, avec au large 10 statues immergées à 5m de profondeur, visibles en apnée ou snorkeling.",
    tip:"Nager environ 100m au large pour rejoindre les statues (masque-tuba suffit). Parking très difficile l'été, viser tôt le matin ou y aller à pied/vélo.",
    prix:"Gratuit", niveau:"Bon niveau de nage requis pour les statues", lien:"https://www.musee-subaquatique.com/fr/"},
   {titre:"Plage du Passet", cats:["Plages"], commune:"Berre-l'Étang", zone:"proche", distanceKm:8,
-   eau:"etang",
    adresse:null,
    desc:"Plage de sable au bord de l'étang de Berre, dans un cadre plus sauvage que ses voisines.",
    tip:"Eau calme sans vagues, pratique avec de jeunes enfants. Peu d'ombre, prévoir un parasol.",
    prix:"Gratuit", niveau:"Familial", lien:null},
   {titre:"Plage de Champigny", cats:["Plages"], commune:"Berre-l'Étang", zone:"proche", distanceKm:8,
-   eau:"etang",
    adresse:null,
    desc:"Plage de sable fin bordée de palmiers, eau de baignade classée Pavillon Bleu et accessible aux personnes à mobilité réduite (Handiplage).",
    tip:"Grand parking gratuit. La guinguette « Les Merveilles » juste à côté pour un verre ou une glace après la baignade.",
    prix:"Gratuit", niveau:"Familial, accès PMR", lien:null},
   {titre:"Plage du Ranquet", cats:["Plages"], commune:"Istres", zone:"moyen", distanceKm:24,
-   eau:"etang",
    image:"https://commons.wikimedia.org/wiki/Special:FilePath/Plage%20de%20la%20Romaniquette.jpg?width=800",
    adresse:null,
    desc:"Plage aménagée et surveillée en saison au bord de l'étang de Berre, ambiance familiale avec bar-pizzeria sur place.",
    tip:"Surveillée mi-juin à début septembre. Bien équipée, un peu plus animée que les plages voisines.",
    prix:"Gratuit", niveau:"Familial", lien:null},
   {titre:"Plage des Robinsons", cats:["Plages"], commune:"Rognac", zone:"proche", distanceKm:6,
-   eau:"etang",
    adresse:"Près de la base nautique, 13340 Rognac",
    desc:"Petite plage discrète au bord de l'étang de Berre, la plus proche de Velaux, près de la base nautique.",
    tip:"Non surveillée et peu fréquentée — parfait pour une baignade tranquille en semaine. Eau suivie régulièrement, bons résultats en général.",
    prix:"Gratuit", niveau:"Familial", lien:null},
   {titre:"Plage des Cabassons", cats:["Plages"], commune:"Saint-Chamas", zone:"proche", distanceKm:10,
-   eau:"etang",
    adresse:null,
    desc:"Plage nichée entre le port de pêche et le port de plaisance de Saint-Chamas, vue sur les collines du Baou.",
    tip:"Sable fin et eau claire, cadre plus authentique que les grandes plages. Pavillon Bleu.",
    prix:"Gratuit", niveau:"Familial", lien:null},
   {titre:"Plage des Marettes et de l'Agneau", cats:["Plages"], commune:"Vitrolles", zone:"proche", distanceKm:13,
-   eau:"etang",
    adresse:"Quartier des Vignettes, 13127 Vitrolles",
    desc:"Grande plage de sable aménagée, ponton en bois avec transats, bordée de tamaris, très prisée l'été.",
    tip:"Surveillée mi-juin à fin août. Animations « Lire et jouer à la plage » et soirées estivales en août.",
    prix:"Gratuit", niveau:"Familial", lien:null},
   {titre:"Plage du Jaï", cats:["Plages"], commune:"Marignane", zone:"proche", distanceKm:17,
-   eau:"etang",
    adresse:null,
    desc:"Longue plage de 600m de sable et pelouse au bord de l'étang de Berre, avec un espace ludique pour les enfants.",
    tip:"Surveillée du 1er juillet au 31 août, 10h30-18h. Bien équipée pour passer la journée en famille.",
    prix:"Gratuit", niveau:"Familial", lien:null},
   {titre:"Plage de Figuerolles", cats:["Plages"], commune:"Martigues", zone:"moyen", distanceKm:25,
-   eau:"etang",
    adresse:null,
    desc:"L'une des plus belles plages de l'étang de Berre selon les habitués, au bord du grand parc de Figuerolles.",
    tip:"Combinable avec la visite de la ferme pédagogique et le sentier du patrimoine agricole du parc juste à côté.",
    prix:"Gratuit", niveau:"Familial", lien:null},
   {titre:"Plage du centre-ville — bord de l'étang de Berre", cats:["Plages"], commune:"Martigues", zone:"moyen", distanceKm:25,
-   eau:"etang",
    adresse:null,
    desc:"Plage de sable en plein centre de Martigues, certifiée eaux de baignade, sans vagues ni courant.",
    tip:"Pratique pour combiner baignade et balade dans le quartier de l'Île le même après-midi.",
    prix:"Gratuit", niveau:"Familial, eau calme", lien:null},
   {titre:"Plage municipale d'Istres", cats:["Plages"], commune:"Istres", zone:"moyen", distanceKm:24,
-   eau:"etang",
    adresse:null,
    desc:"Plage aménagée au bord de l'étang de l'Olivier, eau calme sans marée ni vagues, idéale petits enfants.",
    tip:"Base nautique attenante pour louer paddle et canoë. Aire de jeux et snacks à proximité.",
    prix:"Gratuit", niveau:"Familial, dès le plus jeune âge", lien:null},
-  {titre:"Plages des Saintes-Maries-de-la-Mer", cats:["Plages"], commune:"Saintes-Maries-de-la-Mer", zone:"pepite", distanceKm:70,
-   eau:"mer",
+  {titre:"Plages des Saintes-Maries-de-la-Mer", cats:["Plages","Nature"], commune:"Saintes-Maries-de-la-Mer", zone:"pepite", distanceKm:70,
    adresse:null,
    desc:"Immenses plages de sable sauvage à perte de vue, entre mer et marais, au cœur de la Camargue.",
    tip:"Peu ou pas d'ombre, prévoir crème solaire et parasol. Certaines portions sont naturistes, se renseigner sur place.",
    prix:"Gratuit (parking payant en saison)", niveau:"Familial", lien:null},
 
   // --- NATURE & RANDOS ---
-  {titre:"Aqueduc de Roquefavour & bord de l'Arc", cats:["Plages"], commune:"Ventabren", zone:"proche", distanceKm:12,
-   eau:"riviere",
+  {titre:"Bord de l'étang de Berre — Parc de la Garenne", cats:["Nature"], commune:"Velaux", zone:"proche", distanceKm:0,
+   adresse:"Parc de la Garenne, 13880 Velaux",
+   desc:"Promenade familiale ombragée au bord de l'eau, avec vue dégagée sur l'étang.",
+   tip:"Idéal en fin de journée. Jeux pour enfants sur place, accès direct depuis le centre du village.",
+   prix:"Gratuit", niveau:"Familial, accessible poussette", lien:null},
+  {titre:"Ruines de la chapelle Sainte-Entropie", cats:["Nature","Patrimoine"], commune:"Velaux", zone:"proche", distanceKm:1,
+   adresse:null,
+   desc:"Boucle facile de 6 km menant à des ruines historiques et à un beau point de vue sur le village.",
+   tip:"Départ au cimetière Saint-Martin (le haut). Comptez environ 1h30-2h avec la montée jusqu'au sommet de la colline.",
+   prix:"Gratuit", niveau:"Facile", lien:null},
+  {titre:"Croix de Rognac", cats:["Nature"], commune:"Rognac", zone:"proche", distanceKm:6,
+   adresse:null,
+   desc:"Point de vue panoramique sur l'étang de Berre, Vitrolles et les falaises de Rognac.",
+   tip:"Meilleur moment au coucher du soleil. Chemin caillouteux par endroits, prévoir de bonnes chaussures.",
+   prix:"Gratuit", niveau:"Moyen, quelques passages raides", lien:null},
+  {titre:"Plateau de l'Arbois", cats:["Nature"], commune:"Vitrolles", zone:"proche", distanceKm:13,
+   adresse:null,
+   desc:"Garrigue et vues dégagées sur l'étang de Berre, ancien site d'essais aéronautiques.",
+   tip:"Réseau de sentiers balisés. Accès parfois restreint l'été en cas de risque incendie élevé — vérifier avant de partir.",
+   prix:"Gratuit", niveau:"Facile à moyen", lien:null},
+  {titre:"Aqueduc de Roquefavour & bord de l'Arc", cats:["Nature","Patrimoine"], commune:"Ventabren", zone:"proche", distanceKm:12,
    image:"https://commons.wikimedia.org/wiki/Special:FilePath/Aqueduc%20de%20Roquefavour%202.jpg?width=800",
    adresse:"Le Moulin du Pont, 13122 Ventabren",
    desc:"Le plus grand aqueduc en pierre de maçonnerie d'Europe, avec possibilité de baignade dans l'Arc en contrebas.",
    tip:"Parking gratuit au rond-point du Moulin du Pont. Baignade sauvage à ses risques, site très fréquenté l'été.",
    prix:"Gratuit", niveau:"Familial", lien:null},
-  {titre:"Calanque de Niolon", cats:["Plages"], commune:"Le Rove", zone:"proche", distanceKm:20,
-   eau:"mer",
+  {titre:"Calanque de Niolon", cats:["Nature","Plages"], commune:"Le Rove", zone:"proche", distanceKm:20,
    adresse:null,
    desc:"Petite crique à l'eau turquoise nichée près d'un port de pêche, moins connue que les grandes calanques.",
    tip:"Accès à pied depuis le petit port. Arriver tôt en été pour trouver une place à l'ombre.",
    prix:"Gratuit", niveau:"Facile", lien:null},
+  {titre:"Source de l'Infernet", cats:["Nature"], commune:"Les Pennes-Mirabeau", zone:"proche", distanceKm:18,
+   adresse:null,
+   desc:"Petite cascade et vasques d'eau fraîche façon mini-canyon, au fil de la Cadière.",
+   tip:"À faire idéalement quelques jours après la pluie pour voir la cascade en eau. Accès parfois boueux.",
+   prix:"Gratuit", niveau:"Facile", lien:null},
+  {titre:"Sentier du littoral — Côte Bleue", cats:["Nature","Sport"], commune:"Carry-le-Rouet", zone:"moyen", distanceKm:24,
+   adresse:null,
+   desc:"Balade en corniche avec vue mer permanente, plusieurs criques de baignade sur le trajet.",
+   tip:"Tronçon Carry → Sausset-les-Pins : environ 1h30 à pied. Prévoir des chaussures de marche, ombre rare.",
+   prix:"Gratuit", niveau:"Moyen", lien:null},
+  {titre:"Montagne Sainte-Victoire", cats:["Nature","Sport"], commune:"Vauvenargues", zone:"pepite", distanceKm:45,
+   image:"https://commons.wikimedia.org/wiki/Special:FilePath/Montagne%20Sainte-Victoire%20depuis%20Saint-Antonin-sur-Bayon.jpg?width=800",
+   adresse:"Barrage de Bimont, 13100 Aix-en-Provence",
+   desc:"La montagne de Cézanne : randos vers le prieuré et la Croix de Provence, vues à 360°.",
+   tip:"Départ conseillé au barrage de Bimont. Prévoir beaucoup d'eau, l'accès peut être fermé les jours de fort mistral.",
+   prix:"Gratuit", niveau:"Soutenu", lien:null},
+  {titre:"Calanques — Port-Miou à En-Vau", cats:["Nature","Sport"], commune:"Cassis", zone:"pepite", distanceKm:50,
+   image:"https://commons.wikimedia.org/wiki/Special:FilePath/Calanque%20d%27En%20Vau-Cassis.jpg?width=800",
+   adresse:null,
+   desc:"Le grand classique : criques d'eau turquoise encaissées entre falaises blanches.",
+   tip:"Partir tôt le matin. Accès à certaines calanques soumis à réservation en ligne l'été (fort risque incendie).",
+   prix:"Gratuit (réservation obligatoire en été)", niveau:"Moyen, 3h AR", lien:"https://www.calanques-parcnational.fr"},
+  {titre:"Camargue — Étang du Vaccarès & Saintes-Maries", cats:["Nature"], commune:"Saintes-Maries-de-la-Mer", zone:"pepite", distanceKm:70,
+   image:"https://commons.wikimedia.org/wiki/Special:FilePath/Flamants%20roses%20en%20Camargue.jpg?width=800",
+   adresse:null,
+   desc:"Flamants roses, chevaux et taureaux en liberté, plages sauvages à perte de vue.",
+   tip:"Prévoir la journée. Location de vélo agréable le long des digues. Moustiques redoutables au printemps — anti-moustique indispensable.",
+   prix:"Gratuit (parking payant sur certains sites)", niveau:"Facile", lien:null},
+
   // --- ENFANTS & FAMILLES ---
-  {titre:"Indian Forest — Decathlon Village", cats:["Kids"], commune:"Bouc-Bel-Air", zone:"moyen", distanceKm:30,
+  {titre:"Indian Forest — Decathlon Village", cats:["Enfants","Sport"], commune:"Bouc-Bel-Air", zone:"moyen", distanceKm:30,
    adresse:"Decathlon Village, 13320 Bouc-Bel-Air",
    desc:"Parc accrobranche de 12 parcours dès 3 ans, installé dans une pinède à l'abri du mistral.",
    tip:"Réserver en ligne le week-end. Prévoir 2 à 3h sur place.",
    prix:"Payant — env. 15 à 25 €/pers", niveau:"Dès 3 ans", lien:"https://www.indianforest.fr"},
-  {titre:"Décor Automates", cats:["Kids"], commune:"Lambesc", zone:"moyen", distanceKm:25,
+  {titre:"Décor Automates", cats:["Enfants"], commune:"Lambesc", zone:"moyen", distanceKm:25,
    adresse:null,
    desc:"Parc à automates chantants, aires de jeux, karts et parcours aventure sur 8ha ombragés.",
    tip:"Idéal 3-10 ans. Deux espaces snack sur place, prévoir la demi-journée.",
    prix:"Payant", niveau:"Familial", lien:null},
-  {titre:"Zoo de la Barben", cats:["Kids"], commune:"La Barben", zone:"moyen", distanceKm:27,
+  {titre:"Zoo de la Barben", cats:["Enfants","Patrimoine"], commune:"La Barben", zone:"moyen", distanceKm:27,
    adresse:"Château de la Barben, 13330 La Barben",
    desc:"Plus grand parc animalier de la région : lions, girafes, panda roux, dans le parc du château.",
    tip:"Prévoir une demi-journée. Nourrissages à heures fixes, combinable avec la visite du château.",
    prix:"Payant — env. 20 €/pers", niveau:"Familial", lien:null},
-  {titre:"Dinosaur'Istres", cats:["Kids"], commune:"Istres", zone:"moyen", distanceKm:24,
+  {titre:"Dinosaur'Istres", cats:["Enfants"], commune:"Istres", zone:"moyen", distanceKm:24,
    adresse:null,
    desc:"Parc gratuit en plein air avec des dinosaures grandeur nature.",
    tip:"Accès libre et gratuit toute l'année. Aire de jeux à proximité, sympa en fin de journée.",
    prix:"Gratuit", niveau:"Familial", lien:null},
-  {titre:"Ferme pédagogique du Parc de Figuerolles", cats:["Kids"], commune:"Martigues", zone:"moyen", distanceKm:25,
+  {titre:"Ferme pédagogique du Parc de Figuerolles", cats:["Enfants","Nature"], commune:"Martigues", zone:"moyen", distanceKm:25,
    adresse:"Parc de Figuerolles, 13500 Martigues",
    desc:"130 hectares avec ferme pédagogique, jardin méditerranéen et sentier du patrimoine agricole.",
    tip:"Accès gratuit à la ferme. Prévoir un pique-nique, l'aire dédiée est agréable.",
    prix:"Gratuit", niveau:"Familial", lien:null},
-  {titre:"Ferme pédagogique communale", cats:["Kids"], commune:"Saint-Mitre-les-Remparts", zone:"moyen", distanceKm:27,
+  {titre:"Ferme pédagogique communale", cats:["Enfants"], commune:"Saint-Mitre-les-Remparts", zone:"moyen", distanceKm:27,
    adresse:null,
    desc:"Petite ferme avec ânes, chèvres, moutons, volailles et paons.",
    tip:"Accès libre, idéal pour les tout-petits. À combiner avec une balade autour de l'étang de Citis.",
    prix:"Gratuit", niveau:"Dès le plus jeune âge", lien:null},
-  {titre:"Block'Out — salle de bloc", cats:["Kids"], commune:"Vitrolles", zone:"proche", distanceKm:13,
+  {titre:"Block'Out — salle de bloc", cats:["Enfants","Sport"], commune:"Vitrolles", zone:"proche", distanceKm:13,
    adresse:null,
    desc:"Salle d'escalade de bloc conviviale, accessible aux débutants dès 5 ans.",
    tip:"Chaussons et matériel en location sur place. Formule anniversaire possible.",
    prix:"Payant", niveau:"Dès 5 ans", lien:null},
-  {titre:"Miroir aux Oiseaux & balade des canaux", cats:["Kids"], commune:"Martigues", zone:"moyen", distanceKm:25,
+  {titre:"Miroir aux Oiseaux & balade des canaux", cats:["Enfants","Patrimoine"], commune:"Martigues", zone:"moyen", distanceKm:25,
    image:"https://commons.wikimedia.org/wiki/Special:FilePath/Martigues%20-%20Miroir%20aux%20Oiseaux.jpg?width=800",
    adresse:"Quartier de l'Île, 13500 Martigues",
    desc:"Façades colorées reflétées dans l'eau du canal Saint-Sébastien, glaces et jeux sur les quais.",
    tip:"Parking de l'Île payant. Jolie balade en fin d'après-midi, lumière dorée sur les façades.",
    prix:"Gratuit", niveau:"Familial", lien:null},
-  {titre:"Petit train de la Sainte-Victoire", cats:["Kids"], commune:"Saint-Antonin-sur-Bayon", zone:"pepite", distanceKm:38,
+  {titre:"Petit train de la Sainte-Victoire", cats:["Enfants"], commune:"Saint-Antonin-sur-Bayon", zone:"pepite", distanceKm:38,
    adresse:null,
    desc:"Balade en petit train d'environ 40 minutes dans la campagne au pied de la montagne Sainte-Victoire.",
    tip:"Sympa avec de jeunes enfants. Horaires saisonniers à vérifier avant de partir.",
    prix:"Payant", niveau:"Familial", lien:null},
 
   // --- PATRIMOINE & VISITES ---
+  {titre:"Vieux Velaux — château des Quatre Tours", cats:["Patrimoine"], commune:"Velaux", zone:"proche", distanceKm:0,
+   adresse:"Place F. Caire, 13880 Velaux",
+   desc:"Cœur historique du village : ruelles pittoresques et panorama sur l'étang depuis le haut du village.",
+   tip:"Parcours balisé de 9,7 km « entre village et colline » au départ du cimetière Saint-Martin (flyer dispo en mairie).",
+   prix:"Gratuit", niveau:"Facile", lien:null},
+  {titre:"Village perché de Ventabren", cats:["Patrimoine"], commune:"Ventabren", zone:"proche", distanceKm:12,
+   image:"https://commons.wikimedia.org/wiki/Special:FilePath/Ventabren%20village.jpg?width=800",
+   adresse:null,
+   desc:"Vestiges du château de la Reine Jeanne, ruelles perchées, vue sur toute la plaine aixoise.",
+   tip:"Se garer en bas du village et monter à pied. Très photogénique au coucher de soleil.",
+   prix:"Gratuit", niveau:"Facile", lien:null},
+  {titre:"Village perché d'Éguilles", cats:["Patrimoine"], commune:"Éguilles", zone:"moyen", distanceKm:22,
+   adresse:null,
+   desc:"Façades en pierre blonde, escaliers étroits et placettes bordées d'oliviers.",
+   tip:"Marché le mercredi matin. Belle vue sur la plaine aixoise depuis l'esplanade du village.",
+   prix:"Gratuit", niveau:"Facile", lien:null},
+  {titre:"Aix-en-Provence — cours Mirabeau", cats:["Patrimoine"], commune:"Aix-en-Provence", zone:"moyen", distanceKm:25,
+   image:"https://commons.wikimedia.org/wiki/Special:FilePath/2016%20Aix-en-Provence%20-%20Le%20cours%20Mirabeau.jpg?width=800",
+   adresse:null,
+   desc:"Fontaines, hôtels particuliers, ateliers de Cézanne : la grande ville d'art la plus proche de Velaux.",
+   tip:"Se garer en parking-relais. Marché provençal les mardi, jeudi et samedi matin dans le centre.",
+   prix:"Gratuit (musées payants)", niveau:"Familial", lien:null},
+  {titre:"Salon-de-Provence — château de l'Empéri", cats:["Patrimoine"], commune:"Salon-de-Provence", zone:"moyen", distanceKm:20,
+   image:"https://commons.wikimedia.org/wiki/Special:FilePath/Emperi.jpg?width=800",
+   adresse:null,
+   desc:"Cité de Nostradamus et de la cavalerie, château médiéval dominant la ville.",
+   tip:"Le château offre une vue superbe sur la ville. Combiner avec une balade dans le centre piéton.",
+   prix:"Musées payants, centre libre", niveau:"Familial", lien:null},
+  {titre:"Château de La Barben", cats:["Patrimoine"], commune:"La Barben", zone:"moyen", distanceKm:27,
+   adresse:null,
+   desc:"Château médiéval habité depuis le XIe siècle, dominant la vallée de la Touloubre.",
+   tip:"Combinable avec la visite du zoo attenant pour une journée complète.",
+   prix:"Payant", niveau:"Familial", lien:null},
+  {titre:"Les Baux-de-Provence", cats:["Patrimoine"], commune:"Les Baux-de-Provence", zone:"pepite", distanceKm:45,
+   image:"https://commons.wikimedia.org/wiki/Special:FilePath/13520%20Les%20Baux-de-Provence%2C%20France%20-%20panoramio%20%282%29.jpg?width=800",
+   adresse:null,
+   desc:"Village perché classé parmi les plus beaux de France, accroché à un éperon rocheux des Alpilles.",
+   tip:"Arriver tôt pour éviter l'affluence. Les Carrières de Lumières juste en contrebas valent le détour.",
+   prix:"Village libre, château et carrières payants", niveau:"Familial", lien:null},
+  {titre:"Saint-Rémy-de-Provence & Glanum", cats:["Patrimoine"], commune:"Saint-Rémy-de-Provence", zone:"pepite", distanceKm:48,
+   adresse:null,
+   desc:"Ruelles provençales, arc antique et mausolée romain aux portes de la ville.",
+   tip:"Le marché du mercredi matin est réputé dans toute la région.",
+   prix:"Ville libre, site de Glanum payant", niveau:"Familial", lien:null},
+  {titre:"Abbaye de Silvacane", cats:["Patrimoine"], commune:"La Roque-d'Anthéron", zone:"pepite", distanceKm:40,
+   adresse:null,
+   desc:"Abbaye cistercienne du XIIe siècle remarquablement conservée, au bord de la Durance.",
+   tip:"À combiner avec le festival de piano au château voisin en été.",
+   prix:"Payant", niveau:"Familial", lien:null},
+  {titre:"Eygalières", cats:["Patrimoine"], commune:"Eygalières", zone:"pepite", distanceKm:50,
+   adresse:null,
+   desc:"Village perché des Alpilles, chapelle Saint-Sixte et vestiges du donjon en haut du village.",
+   tip:"Marché provençal le vendredi. Bonnes tables pour prolonger la sortie.",
+   prix:"Gratuit", niveau:"Facile", lien:null},
+
   // --- LOISIRS & SPORT ---
-  {titre:"Parc accrobranche du Montaiguet", cats:["Kids"], commune:"Aix-en-Provence", zone:"moyen", distanceKm:25,
+  {titre:"Climb Up Aix-en-Provence", cats:["Sport"], commune:"Aix-en-Provence", zone:"moyen", distanceKm:25,
+   adresse:null,
+   desc:"Salle d'escalade de voie et de bloc accessible à tous niveaux.",
+   tip:"Forfaits découverte avec matériel inclus. Cours enfants proposés en semaine.",
+   prix:"Payant", niveau:"Tous niveaux", lien:null},
+  {titre:"Parc accrobranche du Montaiguet", cats:["Sport","Enfants"], commune:"Aix-en-Provence", zone:"moyen", distanceKm:25,
    adresse:"Chemin du Viaduc, 13090 Aix-en-Provence",
    desc:"Parcours jusqu'à 20 m de haut, dans une forêt à l'abri du mistral.",
    tip:"Prévoir 2h sur place. La carte bleue n'est pas acceptée sur site, prévoir des espèces.",
    prix:"Payant — dès 10 €/pers", niveau:"Dès 3 ans", lien:null},
+  {titre:"Base nautique de l'étang de Berre", cats:["Sport"], commune:"Saint-Chamas", zone:"proche", distanceKm:10,
+   adresse:null,
+   desc:"Paddle, voile légère et canoë sur le plan d'eau, sans le vent ni la houle de la mer.",
+   tip:"Vérifier les horaires d'ouverture saisonniers auprès de la base ou de la mairie avant de s'y rendre.",
+   prix:"Payant", niveau:"Tous niveaux", lien:null},
+  {titre:"Sentier sous-marin de la Côte Bleue", cats:["Sport","Nature"], commune:"Carry-le-Rouet", zone:"moyen", distanceKm:24,
+   adresse:null,
+   desc:"Parc marin protégé avec un sentier sous-marin balisé, accessible en palmes-masque-tuba.",
+   tip:"Le sentier sous-marin est gratuit et signalé par des bouées. Sorties en club pour la plongée bouteille.",
+   prix:"Gratuit (sentier), payant en club", niveau:"Facile", lien:null},
+  {titre:"Vallon du Saut — escalade & curiosités géologiques", cats:["Sport","Nature"], commune:"Aix-en-Provence", zone:"moyen", distanceKm:28,
+   adresse:null,
+   desc:"Grande boucle technique vers les vallons de Valtrède et de Fauconnière, roche percée et parois d'escalade.",
+   tip:"Passages techniques par endroits, déconseillé aux débutants et aux enfants en bas âge.",
+   prix:"Gratuit", niveau:"Soutenu", lien:null}
 ];
-
-const CAT_FALLBACK_IMAGE = {
-  Kids:"https://commons.wikimedia.org/wiki/Special:FilePath/Children%27s%20Playground%20In%20Mt%20Albert.jpg?width=800",
-  Plages:"https://commons.wikimedia.org/wiki/Special:FilePath/Plage%20de%20la%20Romaniquette.jpg?width=800",
-  Amis:"https://commons.wikimedia.org/wiki/Special:FilePath/Toasting.JPG?width=800",
-  Decouverte:"https://commons.wikimedia.org/wiki/Special:FilePath/Ventabren%20village.jpg?width=800"
-};
-function spotImage(s){
-  return s.image || CAT_FALLBACK_IMAGE[(s.cats||[])[0]] || null;
-}
 
 let app, db, auth, currentUid = null, isAdmin = false;
 let spots = [];
@@ -686,10 +682,9 @@ let dataLoaded = false;
 let activeCat = "Toutes";
 let activeZone = "Toutes";
 let activeCommune = "Toutes";
-let activeEau = "Toutes";
 let sortMode = "distance";
 let viewMode = "board";
-let adminMenuOpen = false;
+let onlyFree = false;
 
 function showConfigWarning(msg){
   let el = document.getElementById('configWarning');
@@ -720,6 +715,23 @@ function updateAdminState(user){
   renderAdminBadge();
 }
 
+async function trackVisit(){
+  if(sessionStorage.getItem('visit_tracked')) return;
+  sessionStorage.setItem('visit_tracked', '1');
+  const today = new Date().toISOString().slice(0, 10);
+  try{
+    await setDoc(doc(db, "visites_total", "global"), {
+      count: increment(1),
+      lastVisit: serverTimestamp()
+    }, { merge: true });
+    await setDoc(doc(db, "visites_jour", today), {
+      count: increment(1)
+    }, { merge: true });
+  }catch(e){
+    console.warn("Tracking échoué", e);
+  }
+}
+
 if(CONFIG_READY){
   app = initializeApp(firebaseConfig);
   db = getFirestore(app);
@@ -730,6 +742,7 @@ if(CONFIG_READY){
       updateAdminState(user);
       startListening();
       render();
+      trackVisit();
     } else {
       signInAnonymously(auth).catch(err=>{
         console.error(err);
@@ -748,7 +761,7 @@ function getFilteredList(){
     (activeCat==='Toutes' || (s.cats||[]).includes(activeCat)) &&
     (activeZone==='Toutes' || s.zone===activeZone) &&
     (activeCommune==='Toutes' || s.commune===activeCommune) &&
-    (activeEau==='Toutes' || s.eau===activeEau)
+    (!onlyFree || (s.prix||'').toLowerCase().startsWith('gratuit'))
   );
   if(sortMode==='distance'){
     list = list.slice().sort((a,b)=> (a.distanceKm||0) - (b.distanceKm||0));
@@ -762,64 +775,53 @@ function communeList(){
   return [...new Set(spots.map(s=>s.commune).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
 }
 
+function renderModeToggle(){
+  document.getElementById('freeToggle').classList.toggle('active', onlyFree);
+}
+
 function renderFilters(){
   const el = document.getElementById('filters');
   let html = `<button class="pill ${activeCat==='Toutes'?'active':''}" data-cat="Toutes">Toutes</button>`;
   CATS.forEach(c=>{
     html += `<button class="pill ${activeCat===c?'active':''}" data-cat="${c}">${CAT_EMOJI[c]} ${CAT_LABEL[c]}</button>`;
   });
+  html += `<select id="communeSelect">
+    <option value="Toutes">Toutes les communes</option>
+    ${communeList().map(v=>`<option value="${v}" ${activeCommune===v?'selected':''}>${v}</option>`).join('')}
+  </select>`;
+  html += `<div class="sort-toggle">
+    <button class="pill ${sortMode==='distance'?'active':''}" data-sort="distance">📍 Distance</button>
+    <button class="pill ${sortMode==='alpha'?'active':''}" data-sort="alpha">🔤 A-Z</button>
+  </div>`;
   el.innerHTML = html;
 
   el.querySelectorAll('[data-cat]').forEach(btn=>{
     btn.onclick = ()=>{ activeCat = btn.dataset.cat; render(); };
   });
+  el.querySelectorAll('[data-sort]').forEach(btn=>{
+    btn.onclick = ()=>{ sortMode = btn.dataset.sort; render(); };
+  });
+  document.getElementById('communeSelect').onchange = (e)=>{ activeCommune = e.target.value; render(); };
 }
 
 function renderZoneFilterBar(){
   const bar = document.getElementById('zoneFilterBar');
   bar.style.display = 'flex';
   bar.innerHTML = ZONES.map(z=>`
-    <button class="pill ${activeZone===z?'active':''}" data-zone="${z}">${ZONE_EMOJI[z]} ${ZONE_LABEL[z]}</button>
-  `).join('') + `<button class="pill ${activeZone==='Toutes'?'active':''}" data-zone="Toutes">Toutes les zones</button>`;
+    <button class="pill zone-pill ${activeZone===z?'active':''}" data-zone="${z}" style="background:${activeZone===z?'#00000030':'transparent'}; border:1px solid #ffffff70; color:#fff8ec;">${ZONE_EMOJI[z]} ${ZONE_LABEL[z]}</button>
+  `).join('') + `<button class="pill" data-zone="Toutes" style="background:${activeZone==='Toutes'?'#00000030':'transparent'}; border:1px solid #ffffff70; color:#fff8ec;">Toutes zones</button>`;
   bar.querySelectorAll('[data-zone]').forEach(btn=>{
     btn.onclick = ()=>{ activeZone = btn.dataset.zone; render(); };
-  });
-}
-
-function renderEauFilterBar(){
-  const bar = document.getElementById('eauFilterBar');
-  if(activeCat !== 'Plages'){
-    bar.style.display = 'none';
-    if(activeEau !== 'Toutes'){ activeEau = 'Toutes'; }
-    return;
-  }
-  bar.style.display = 'flex';
-  bar.innerHTML = EAU_TYPES.map(e=>`
-    <button class="pill ${activeEau===e?'active':''}" data-eau="${e}">${EAU_EMOJI[e]} ${EAU_LABEL[e]}</button>
-  `).join('') + `<button class="pill ${activeEau==='Toutes'?'active':''}" data-eau="Toutes">Toutes les eaux</button>`;
-  bar.querySelectorAll('[data-eau]').forEach(btn=>{
-    btn.onclick = ()=>{ activeEau = btn.dataset.eau; render(); };
   });
 }
 
 async function seedDemoData(){
   if(!isAdmin){ alert("Connecte-toi en admin pour importer les spots de départ."); return; }
   try{
-    const existingTitles = new Set(spots.map(s=>(s.titre||'').trim().toLowerCase()));
-    let added = 0, skipped = 0;
     for(const item of DEMO_SPOTS){
-      if(existingTitles.has((item.titre||'').trim().toLowerCase())){
-        skipped++;
-        continue;
-      }
       await addDoc(collection(db,'spots'), {
         ...item, createdAt: serverTimestamp()
       });
-      existingTitles.add((item.titre||'').trim().toLowerCase());
-      added++;
-    }
-    if(skipped > 0){
-      console.log(`Import : ${added} ajoutés, ${skipped} déjà présents (ignorés pour éviter les doublons).`);
     }
   }catch(err){
     console.error(err);
@@ -870,18 +872,11 @@ function renderAdminBadge(){
   if(!el) return;
   if(isAdmin){
     el.innerHTML = `
-      <button class="pill" id="adminMenuToggle" title="Menu admin">⚙️</button>
-      <div class="admin-toolbar ${adminMenuOpen ? 'open' : ''}" id="adminToolbar">
-        <button class="pill" id="bulkBtn">📥 Import</button>
-        <button class="pill" id="exportBtn">📤 Export</button>
-        <button class="pill" id="deleteAllBtn" style="background:var(--pin); border-color:var(--pin); color:#fff8ec;">🗑️ Tout supprimer</button>
-        <button class="pill" id="logoutBtn">Déconnexion</button>
-      </div>
+      <button class="pill" id="bulkBtn">📥 Import</button>
+      <button class="pill" id="exportBtn">📤 Export</button>
+      <button class="pill" id="deleteAllBtn" style="background:var(--pin); border-color:var(--pin); color:#fff8ec;">🗑️ Tout supprimer</button>
+      <button class="pill" id="logoutBtn">Déconnexion</button>
     `;
-    document.getElementById('adminMenuToggle').onclick = ()=>{
-      adminMenuOpen = !adminMenuOpen;
-      document.getElementById('adminToolbar').classList.toggle('open', adminMenuOpen);
-    };
     document.getElementById('bulkBtn').onclick = openBulkImport;
     document.getElementById('exportBtn').onclick = exportJson;
     document.getElementById('deleteAllBtn').onclick = openDeleteAllConfirm;
@@ -889,7 +884,7 @@ function renderAdminBadge(){
       signOut(auth).then(()=> signInAnonymously(auth));
     };
   } else {
-    el.innerHTML = `<button class="pill" id="adminLoginBtn" title="Connexion admin">🔑</button>`;
+    el.innerHTML = `<button class="pill" id="adminLoginBtn">🔑 Admin</button>`;
     document.getElementById('adminLoginBtn').onclick = openLoginForm;
   }
 }
@@ -971,7 +966,6 @@ function toExportFormat(){
     cats: s.cats || [],
     commune: s.commune,
     zone: s.zone,
-    eau: s.eau || null,
     distanceKm: s.distanceKm || null,
     adresse: s.adresse || null,
     desc: s.desc,
@@ -1004,7 +998,7 @@ function openBulkImport(){
       <div style="font-family:'Space Mono',monospace; font-size:11.5px; color:var(--ink-soft); margin-bottom:10px; line-height:1.6;">
         Colle un tableau JSON de spots (même format que l'export). Chaque spot est ajouté comme nouveau document.
       </div>
-      <textarea id="bulk-json" style="width:100%; min-height:220px; font-family:'Space Mono',monospace; font-size:12px; padding:10px; border:1px solid #b6935c88; background:#fffdf6; border-radius:2px;" placeholder='[{"titre":"...", "cats":["Kids"], "commune":"Velaux", "zone":"proche", "distanceKm":0, "desc":"...", "tip":"...", "prix":"Gratuit"}]'></textarea>
+      <textarea id="bulk-json" style="width:100%; min-height:220px; font-family:'Space Mono',monospace; font-size:12px; padding:10px; border:1px solid #b6935c88; background:#fffdf6; border-radius:2px;" placeholder='[{"titre":"...", "cats":["Nature"], "commune":"Velaux", "zone":"proche", "distanceKm":0, "desc":"...", "tip":"...", "prix":"Gratuit"}]'></textarea>
       <div id="bulk-status" style="font-family:'Space Mono',monospace; font-size:12px; margin-top:8px;"></div>
       <button class="submit" id="bulk-submit">Importer ces spots</button>
     </div>
@@ -1060,6 +1054,9 @@ function openPublishForm(editing){
       <button class="close" id="closeModal">✕ fermer</button>
       <h2>${isEdit ? 'Modifier le spot' : 'Ajouter un spot'}</h2>
       <label>Titre</label><input type="text" id="f-titre" placeholder="Ex : Calanque de Niolon" value="${isEdit ? (editing.titre||'').replace(/"/g,'&quot;') : ''}">
+      <label>Photo (URL, libre de droits idéalement)</label>
+      <input type="url" id="f-image" placeholder="https://..." value="${isEdit && editing.image ? editing.image : ''}">
+      <div style="font-family:'Space Mono',monospace; font-size:10.5px; color:var(--ink-soft); margin-top:2px;">Astuce : cherche le lieu sur commons.wikimedia.org, ouvre l'image, clic droit → copier l'adresse de l'image.</div>
       <label>Catégories (plusieurs possibles)</label>
       <div id="f-cats-list" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:4px;">
         ${CATS.map(c=>`
@@ -1068,26 +1065,12 @@ function openPublishForm(editing){
           </label>
         `).join('')}
       </div>
-      <label>Photo</label>
-      <div id="f-image-preview-wrap" style="position:relative; cursor:pointer; border-radius:4px; overflow:hidden; border:1px solid #b6935c88;">
-        <img id="f-image-preview" src="${isEdit && editing.image ? editing.image : (CAT_FALLBACK_IMAGE[(isEdit && (editing.cats||[])[0]) || CATS[0]] || '')}" style="width:100%; height:140px; object-fit:cover; display:block;">
-        <div id="f-image-preview-label" style="position:absolute; bottom:0; left:0; right:0; background:#00000090; color:#fff8ec; font-family:'Space Mono',monospace; font-size:11px; padding:6px 10px; text-align:center;">${isEdit && editing.image ? '📷 Ta photo — clique pour changer' : '🖼️ Photo générique — clique pour mettre la tienne'}</div>
-      </div>
-      <input type="url" id="f-image" placeholder="Colle une URL d'image (https://...)" value="${isEdit && editing.image ? editing.image : ''}" style="margin-top:8px;">
-      <div style="font-family:'Space Mono',monospace; font-size:10.5px; color:var(--ink-soft); margin-top:2px;">Astuce : cherche le lieu sur commons.wikimedia.org, ouvre l'image, clic droit → copier l'adresse de l'image. Laisse vide pour garder la photo générique de la catégorie.</div>
       <label>Commune</label>
       <input type="text" id="f-commune" placeholder="Ex : Ventabren" value="${isEdit ? (editing.commune||'').replace(/"/g,'&quot;') : ''}">
       <label>Zone</label>
       <select id="f-zone">
         ${ZONES.map(z=>`<option value="${z}" ${isEdit && editing.zone===z ? 'selected' : ''}>${ZONE_LABEL[z]}</option>`).join('')}
       </select>
-      <div id="f-eau-wrap" style="display:none;">
-        <label>Type d'eau</label>
-        <select id="f-eau">
-          <option value="">— non applicable —</option>
-          ${EAU_TYPES.map(e=>`<option value="${e}" ${isEdit && editing.eau===e ? 'selected' : ''}>${EAU_EMOJI[e]} ${EAU_LABEL[e]}</option>`).join('')}
-        </select>
-      </div>
       <label>Distance approx. depuis Velaux (km)</label>
       <input type="number" id="f-distance" value="${isEdit && editing.distanceKm!=null ? editing.distanceKm : ''}">
       <label>Adresse (optionnelle)</label>
@@ -1107,37 +1090,6 @@ function openPublishForm(editing){
   document.getElementById('overlay').onclick = (e)=>{ if(e.target.id==='overlay') closeModal(); };
   document.getElementById('closeModal').onclick = closeModal;
 
-  const imgInput = document.getElementById('f-image');
-  const imgPreview = document.getElementById('f-image-preview');
-  const imgPreviewLabel = document.getElementById('f-image-preview-label');
-  function currentFirstCat(){
-    const checked = document.querySelector('.f-cat-checkbox:checked');
-    return checked ? checked.value : CATS[0];
-  }
-  function refreshPreview(){
-    const url = imgInput.value.trim();
-    if(url){
-      imgPreview.src = url;
-      imgPreviewLabel.textContent = '📷 Ta photo — clique pour changer';
-    } else {
-      imgPreview.src = CAT_FALLBACK_IMAGE[currentFirstCat()] || '';
-      imgPreviewLabel.textContent = '🖼️ Photo générique — clique pour mettre la tienne';
-    }
-  }
-  imgInput.oninput = refreshPreview;
-  document.querySelectorAll('.f-cat-checkbox').forEach(cb=>{ cb.onchange = refreshPreview; });
-  document.getElementById('f-image-preview-wrap').onclick = ()=>{ imgInput.focus(); imgInput.select(); };
-
-  function refreshEauVisibility(){
-    const isPlages = !!document.querySelector('.f-cat-checkbox[value="Plages"]:checked');
-    document.getElementById('f-eau-wrap').style.display = isPlages ? 'block' : 'none';
-  }
-  refreshEauVisibility();
-  document.querySelectorAll('.f-cat-checkbox').forEach(cb=>{
-    const prevOnChange = cb.onchange;
-    cb.onchange = (e)=>{ if(prevOnChange) prevOnChange(e); refreshEauVisibility(); };
-  });
-
   document.getElementById('f-submit').onclick = async ()=>{
     const titre = document.getElementById('f-titre').value.trim();
     if(!titre){ document.getElementById('f-titre').focus(); return; }
@@ -1155,7 +1107,6 @@ function openPublishForm(editing){
       cats,
       commune,
       zone: document.getElementById('f-zone').value,
-      eau: document.getElementById('f-eau').value || null,
       distanceKm: distanceVal ? parseFloat(distanceVal) : null,
       adresse: document.getElementById('f-adresse').value.trim() || null,
       desc: document.getElementById('f-desc').value || "Pas de description.",
@@ -1184,19 +1135,18 @@ function openPublishForm(editing){
 }
 
 function openDetail(s){
-  const img = spotImage(s);
   document.getElementById('modalRoot').innerHTML = `
   <div class="overlay" id="overlay">
     <div class="modal">
       <button class="close" id="closeModal">✕ fermer</button>
-      ${img ? `<img class="detail-img" src="${img}" alt="${s.titre}" onerror="this.remove()">` : ''}
+      ${s.image ? `<img class="detail-img" src="${s.image}" alt="${s.titre}" onerror="this.remove()">` : ''}
       <div>
         ${(s.cats||[]).map(c=>`<span class="flyer-cat ${catClass(c)}">${CAT_EMOJI[c]} ${CAT_LABEL[c]}</span>`).join('')}
       </div>
       <h2>${s.titre}</h2>
       <div class="detail-meta">
         📍 ${s.commune}${s.distanceKm!=null ? ` · ${s.distanceKm} km de Velaux` : ''}<br>
-        ${ZONE_LABEL[s.zone] ? `${ZONE_EMOJI[s.zone]} ${ZONE_LABEL[s.zone]}` : ''}${s.niveau ? ` · ${s.niveau}` : ''}${s.eau ? ` · ${EAU_EMOJI[s.eau]} ${EAU_LABEL[s.eau]}` : ''}
+        ${ZONE_EMOJI[s.zone]||''} ${ZONE_LABEL[s.zone]||''}${s.niveau ? ` · ${s.niveau}` : ''}
       </div>
       ${s.adresse ? `<div class="detail-address">📌 ${s.adresse}</div>` : ''}
       <div class="detail-desc">${s.desc||''}</div>
@@ -1233,23 +1183,20 @@ function renderBoard(){
     bindSeedBtn(board);
     return;
   }
-  board.innerHTML = list.map(s=>{
-    const img = spotImage(s);
-    return `
+  board.innerHTML = list.map(s=>`
     <div class="flyer" data-id="${s.id}">
-      ${img ? `<img class="flyer-img" src="${img}" alt="${s.titre}" loading="lazy" onerror="this.remove()">` : ''}
+      ${s.image ? `<img class="flyer-img" src="${s.image}" alt="${s.titre}" loading="lazy" onerror="this.remove()">` : ''}
       ${(s.cats||[]).map(c=>`<span class="flyer-cat ${catClass(c)}">${CAT_EMOJI[c]} ${CAT_LABEL[c]}</span>`).join('')}
       <h3>${s.titre}</h3>
       <div class="meta"><span class="flyer-commune-tag">📍 ${s.commune}</span>${s.distanceKm!=null ? ` · ${s.distanceKm} km` : ''}</div>
       ${s.adresse ? `<div class="flyer-address">${s.adresse}</div>` : ''}
       <div class="desc">${s.desc||''}</div>
       <div class="flyer-foot">
-        ${ZONE_LABEL[s.zone] ? `<span class="zone-badge zone-${s.zone}">${ZONE_EMOJI[s.zone]} ${ZONE_LABEL[s.zone]}</span>` : ''}
-        ${s.eau ? `<span class="prix-badge">${EAU_EMOJI[s.eau]} ${EAU_LABEL[s.eau]}</span>` : ''}
+        <span class="zone-badge zone-${s.zone}">${ZONE_EMOJI[s.zone]||''} ${ZONE_LABEL[s.zone]||''}</span>
         ${s.prix ? `<span class="prix-badge">💶 ${s.prix}</span>` : ''}
       </div>
     </div>
-  `;}).join('');
+  `).join('');
   board.querySelectorAll('.flyer').forEach(el=>{
     el.onclick = ()=>{
       const s = spots.find(x=>x.id===el.dataset.id);
@@ -1259,12 +1206,13 @@ function renderBoard(){
 }
 
 document.getElementById('openPublish').onclick = ()=> openPublishForm();
+document.getElementById('freeToggle').onclick = ()=>{ onlyFree = !onlyFree; render(); };
 
 function render(){
+  renderModeToggle();
   renderAdminBadge();
   renderFilters();
   renderZoneFilterBar();
-  renderEauFilterBar();
   renderBoard();
 }
 render();
